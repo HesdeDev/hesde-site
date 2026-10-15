@@ -1,0 +1,1545 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hesde — Gestão contínua de exposições e riscos de segurança</title>
+<meta name="description" content="Hesde: plataforma brasileira de gestão contínua de exposições (CTEM), auditoria, hardening e validação segura de riscos, com núcleo em Rust, controle de escopo e evidência para cada decisão.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#F3EFE8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#191718" media="(prefers-color-scheme: dark)">
+<meta property="og:title" content="Hesde — Gestão contínua de exposições e riscos de segurança">
+<meta property="og:description" content="Identifique, priorize e valide com segurança os riscos de infraestrutura, aplicações, nuvem e identidade, com escopo autorizado e evidência verificável.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="pt_BR">
+<meta name="twitter:card" content="summary">
+<!-- [a definir] URL canônica da versão publicada do site -->
+<link rel="canonical" href="[a definir]">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23F3EFE8'/%3E%3Ctext x='32' y='47' text-anchor='middle' font-family='Bodoni Moda,Bodoni 72,Didot,Georgia,serif' font-size='44' font-weight='500' fill='%23340C0E'%3EH%3C/text%3E%3C/svg%3E">
+<script>
+  /* Tema antes da pintura: o alternador tem prioridade sobre o sistema. */
+  (function () {
+    var d = document.documentElement, t = null;
+    try { t = localStorage.getItem("hesde-theme"); } catch (e) {}
+    if (t === "light" || t === "dark") d.setAttribute("data-theme", t);
+    var dark = t ? t === "dark" : !!(window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches);
+    d.className += (dark ? " is-dark" : "") + " js";
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,500&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+<!-- Ícones lineares: grade de 24 px, traço 1,6, cantos arredondados. pathLength="1" permite redesenhar o traço. -->
+<svg class="sprite" id="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-sev-crit" viewBox="0 0 24 24"><path pathLength="1" d="M8.3 3h7.4L21 8.3v7.4L15.7 21H8.3L3 15.7V8.3z"/><path d="M12 7.8v5.4M12 16.6v.1"/></symbol>
+  <symbol id="i-sev-high" viewBox="0 0 24 24"><path pathLength="1" d="M12 3.6l9.4 16.4H2.6z"/><path d="M12 10v4.4M12 17.3v.1"/></symbol>
+  <symbol id="i-sev-mid" viewBox="0 0 24 24"><circle pathLength="1" cx="12" cy="12" r="9"/><path d="M12 7.6v5.4M12 16.4v.1"/></symbol>
+  <symbol id="i-sev-low" viewBox="0 0 24 24"><circle pathLength="1" cx="12" cy="12" r="9"/><path d="M8 12h8"/></symbol>
+  <symbol id="i-sev-info" viewBox="0 0 24 24"><circle pathLength="1" cx="12" cy="12" r="9"/><path d="M12 11v5.4M12 7.6v.1"/></symbol>
+  <symbol id="i-sev-ok" viewBox="0 0 24 24"><circle pathLength="1" cx="12" cy="12" r="9"/><path d="M8 12.4l2.7 2.7L16 9.8"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path pathLength="1" d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path pathLength="1" d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-arrow-right" viewBox="0 0 24 24"><path pathLength="1" d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-chevron-down" viewBox="0 0 24 24"><path pathLength="1" d="M6 9l6 6 6-6"/></symbol>
+  <symbol id="i-chevron-left" viewBox="0 0 24 24"><path pathLength="1" d="M15 6l-6 6 6 6"/></symbol>
+  <symbol id="i-chevron-right" viewBox="0 0 24 24"><path pathLength="1" d="M9 6l6 6-6 6"/></symbol>
+  <symbol id="i-arrows-h" viewBox="0 0 24 24"><path pathLength="1" d="M9 7l-5 5 5 5M15 7l5 5-5 5"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path pathLength="1" d="M4 7h16M4 12h16M4 17h16"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle pathLength="1" cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6L6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4L6 18M18 6l1.4-1.4"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path pathLength="1" d="M20 14.6A8.2 8.2 0 019.4 4a8.2 8.2 0 1010.6 10.6z"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path pathLength="1" d="M12 3l7 3v5c0 4.4-3 8.4-7 10-4-1.6-7-5.6-7-10V6l7-3z"/><path pathLength="1" d="M9 12l2 2 4-4"/></symbol>
+  <symbol id="i-radar" viewBox="0 0 24 24"><circle pathLength="1" cx="12" cy="12" r="9"/><circle pathLength="1" cx="12" cy="12" r="5"/><path pathLength="1" d="M12 12l6-6"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><path pathLength="1" d="M12 3l9 5-9 5-9-5 9-5z"/><path pathLength="1" d="M3 13l9 5 9-5"/></symbol>
+  <symbol id="i-noise" viewBox="0 0 24 24"><path pathLength="1" d="M3 12h2l2-5 3 10 3-8 2 5 2-2h4"/></symbol>
+  <symbol id="i-scale" viewBox="0 0 24 24"><path pathLength="1" d="M12 4v16M7 20h10M5 8h14"/><path pathLength="1" d="M5 8l-3 6a3 3 0 006 0L5 8zM19 8l-3 6a3 3 0 006 0l-3-6z"/></symbol>
+  <symbol id="i-clipboard" viewBox="0 0 24 24"><rect pathLength="1" x="5" y="4" width="14" height="17" rx="2"/><path pathLength="1" d="M9 3h6v3H9zM9 13l2 2 4-4"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path pathLength="1" d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle pathLength="1" cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-key" viewBox="0 0 24 24"><circle pathLength="1" cx="8" cy="15" r="4"/><path pathLength="1" d="M11 12l9-9M16 7l3 3M14 9l2 2"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path pathLength="1" d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8l-5-5z"/><path pathLength="1" d="M14 3v5h5M9 13h6M9 17h6"/></symbol>
+  <symbol id="i-plug" viewBox="0 0 24 24"><path pathLength="1" d="M9 3v5M15 3v5M7 8h10v3a5 5 0 01-10 0V8zM12 16v5"/></symbol>
+  <symbol id="i-server" viewBox="0 0 24 24"><rect pathLength="1" x="3" y="4" width="18" height="7" rx="1.5"/><rect pathLength="1" x="3" y="13" width="18" height="7" rx="1.5"/><path d="M7 7.5h.01M7 16.5h.01"/></symbol>
+  <symbol id="i-cloud" viewBox="0 0 24 24"><path pathLength="1" d="M7 18h10a4 4 0 00.5-8A6 6 0 006 9.5 4.3 4.3 0 007 18z"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle pathLength="1" cx="9" cy="8" r="3.5"/><path pathLength="1" d="M2.5 20a6.5 6.5 0 0113 0M16 4.5a3.5 3.5 0 010 7M18 14a6.5 6.5 0 013.5 6"/></symbol>
+  <symbol id="i-user-check" viewBox="0 0 24 24"><circle pathLength="1" cx="9" cy="8" r="4"/><path pathLength="1" d="M2 21a7 7 0 0114 0M16 11l2 2 4-4"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect pathLength="1" x="5" y="11" width="14" height="10" rx="2"/><path pathLength="1" d="M8 11V8a4 4 0 018 0v3"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle pathLength="1" cx="11" cy="11" r="7"/><path pathLength="1" d="M20 20l-4-4"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect pathLength="1" x="4" y="4" width="7" height="7" rx="1.5"/><rect pathLength="1" x="13" y="4" width="7" height="7" rx="1.5"/><rect pathLength="1" x="4" y="13" width="7" height="7" rx="1.5"/><rect pathLength="1" x="13" y="13" width="7" height="7" rx="1.5"/></symbol>
+  <symbol id="i-flag" viewBox="0 0 24 24"><path pathLength="1" d="M5 21V4h11l-2 4 2 4H5"/></symbol>
+  <symbol id="i-flask" viewBox="0 0 24 24"><path pathLength="1" d="M9 3h6M10 3v6l-5 9a2 2 0 001.7 3h10.6a2 2 0 001.7-3l-5-9V3M7.5 15h9"/></symbol>
+  <symbol id="i-activity" viewBox="0 0 24 24"><path pathLength="1" d="M3 12h4l3-8 4 16 3-8h4"/></symbol>
+  <symbol id="i-zap" viewBox="0 0 24 24"><path pathLength="1" d="M13 3L5 14h6l-1 7 8-11h-6l1-7z"/></symbol>
+  <symbol id="i-ticket" viewBox="0 0 24 24"><path pathLength="1" d="M4 7a2 2 0 012-2h12a2 2 0 012 2v3a2 2 0 000 4v3a2 2 0 01-2 2H6a2 2 0 01-2-2v-3a2 2 0 000-4V7z"/><path d="M14 6v2M14 11v2M14 16v2"/></symbol>
+  <symbol id="i-building" viewBox="0 0 24 24"><path pathLength="1" d="M4 21V5l8-3 8 3v16M9 21v-4h6v4"/><path d="M8 8h.01M12 8h.01M16 8h.01M8 12h.01M12 12h.01M16 12h.01"/></symbol>
+  <symbol id="i-braces" viewBox="0 0 24 24"><path pathLength="1" d="M8 4H7a2 2 0 00-2 2v4l-2 2 2 2v4a2 2 0 002 2h1M16 4h1a2 2 0 012 2v4l2 2-2 2v4a2 2 0 01-2 2h-1"/></symbol>
+  <symbol id="i-code" viewBox="0 0 24 24"><path pathLength="1" d="M8 8l-4 4 4 4M16 8l4 4-4 4M14 5l-4 14"/></symbol>
+  <symbol id="i-cpu" viewBox="0 0 24 24"><rect pathLength="1" x="6" y="6" width="12" height="12" rx="2"/><path pathLength="1" d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path pathLength="1" d="M10 14a4 4 0 005.7 0l3-3a4 4 0 00-5.7-5.7l-1 1M14 10a4 4 0 00-5.7 0l-3 3a4 4 0 005.7 5.7l1-1"/></symbol>
+  <symbol id="i-anchor" viewBox="0 0 24 24"><circle pathLength="1" cx="12" cy="5" r="2"/><path pathLength="1" d="M12 7v14M5 13a7 7 0 0014 0M8 11h8"/></symbol>
+  <symbol id="i-eye-off" viewBox="0 0 24 24"><path pathLength="1" d="M3 3l18 18M10.6 6.1A9.7 9.7 0 0112 6c6 0 9.5 6 9.5 6a16.8 16.8 0 01-3 3.6M6.6 6.6A16.8 16.8 0 002.5 12S6 18 12 18a9.6 9.6 0 004.4-1M9.9 9.9a3 3 0 004.2 4.2"/></symbol>
+  <symbol id="i-ban" viewBox="0 0 24 24"><circle pathLength="1" cx="12" cy="12" r="9"/><path pathLength="1" d="M5.6 5.6l12.8 12.8"/></symbol>
+  <symbol id="i-briefcase" viewBox="0 0 24 24"><rect pathLength="1" x="3" y="7" width="18" height="13" rx="2"/><path pathLength="1" d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2M3 13h18"/></symbol>
+  <symbol id="i-gauge" viewBox="0 0 24 24"><path pathLength="1" d="M4 17a8 8 0 1116 0"/><path pathLength="1" d="M12 17l4-5M4 17h2M18 17h2M12 9V7"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path pathLength="1" d="M10 6h10M10 12h10M10 18h10M4 6h2M4 12h2M4 18h2"/></symbol>
+  <symbol id="i-filter" viewBox="0 0 24 24"><path pathLength="1" d="M4 5h16l-6 8v5l-4 2v-7z"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path pathLength="1" d="M6 16v-5a6 6 0 0112 0v5l2 2H4zM10 21h4"/></symbol>
+  <symbol id="i-wrench" viewBox="0 0 24 24"><path pathLength="1" d="M14.7 6.3a4 4 0 00-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 005.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path pathLength="1" d="M20 11a8 8 0 00-14.3-4.9L4 8M4 4v4h4M4 13a8 8 0 0014.3 4.9L20 16M20 20v-4h-4"/></symbol>
+  <symbol id="i-database" viewBox="0 0 24 24"><ellipse pathLength="1" cx="12" cy="5" rx="8" ry="3"/><path pathLength="1" d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle pathLength="1" cx="12" cy="12" r="9"/><path pathLength="1" d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18"/></symbol>
+  <symbol id="i-monitor" viewBox="0 0 24 24"><rect pathLength="1" x="3" y="4" width="18" height="12" rx="2"/><path pathLength="1" d="M8 20h8M12 16v4"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path pathLength="1" d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2V5zM4 19a2 2 0 012-2h13"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect pathLength="1" x="3" y="5" width="18" height="14" rx="2"/><path pathLength="1" d="M3 7l9 6 9-6"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path pathLength="1" d="M12 4v11M7 10l5 5 5-5M5 20h14"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle pathLength="1" cx="12" cy="12" r="9"/><path pathLength="1" d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-linkedin" viewBox="0 0 24 24"><rect pathLength="1" x="3" y="3" width="18" height="18" rx="3"/><path pathLength="1" d="M8 10v7M8 7v.1M12 17v-7M12 13a2.5 2.5 0 015 0v4"/></symbol>
+  <symbol id="i-github" viewBox="0 0 24 24"><path pathLength="1" d="M9 19c-4 1.3-4-2-6-2.5M15 21v-3.5a3 3 0 00-.9-2.3c3-.3 6-1.5 6-6.5a5 5 0 00-1.4-3.5 4.7 4.7 0 00-.1-3.5s-1.1-.3-3.6 1.4a12.4 12.4 0 00-6.5 0C6 1.4 4.9 1.7 4.9 1.7a4.7 4.7 0 00-.1 3.5A5 5 0 003.4 8.7c0 5 3 6.2 6 6.5a3 3 0 00-.9 2.3V21"/></symbol>
+  <symbol id="i-youtube" viewBox="0 0 24 24"><rect pathLength="1" x="2.5" y="5.5" width="19" height="13" rx="4"/><path pathLength="1" d="M10 9.5v5l4.5-2.5z"/></symbol>
+</svg>
+
+<header class="header" id="header">
+  <div class="container header__inner">
+    <!-- [ESPAÇO DA MARCA] Substituir pelo SVG oficial do logotipo (área de proteção = altura do "H"; não esticar, sem sombra ou efeito). -->
+    <a class="wordmark" href="#inicio" aria-label="Hesde, voltar ao início">HESDE</a>
+    <nav class="nav" id="nav" aria-label="Principal">
+      <a class="nav__link" href="#produto" data-nav="produto">Produto</a>
+      <a class="nav__link" href="#plataforma" data-nav="plataforma">Plataforma</a>
+      <a class="nav__link" href="#seguranca" data-nav="seguranca">Segurança</a>
+      <a class="nav__link" href="#recursos" data-nav="recursos">Recursos</a>
+      <a class="nav__link" href="#precos" data-nav="precos">Preços</a>
+      <button class="nav__link" type="button" data-modal-open="modal-docs">Documentação</button>
+      <a class="nav__link" href="#contato" data-nav="contato">Contato</a>
+      <span class="nav__bar" aria-hidden="true"></span>
+    </nav>
+    <div class="header__actions">
+      <button class="icon-btn theme-toggle" type="button" id="theme-toggle" aria-label="Ativar tema escuro">
+        <svg class="ic ic--20 i-moon" aria-hidden="true"><use href="#i-moon"/></svg>
+        <svg class="ic ic--20 i-sun" aria-hidden="true"><use href="#i-sun"/></svg>
+      </button>
+      <a class="btn btn--primary btn--sm" href="#contato" data-demo>Solicitar demonstração</a>
+      <button class="icon-btn menu-btn" type="button" id="menu-btn" aria-expanded="false" aria-controls="mobile-menu" aria-label="Abrir menu">
+        <svg class="ic ic--24" aria-hidden="true"><use href="#i-menu"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-menu" id="mobile-menu" inert>
+    <nav class="container" aria-label="Menu">
+      <ul>
+        <li><a href="#produto">Produto</a></li>
+        <li><a href="#plataforma">Plataforma</a></li>
+        <li><a href="#seguranca">Segurança</a></li>
+        <li><a href="#recursos">Recursos</a></li>
+        <li><a href="#precos">Preços</a></li>
+        <li><button type="button" data-modal-open="modal-docs">Documentação</button></li>
+        <li><a href="#contato">Contato</a></li>
+      </ul>
+      <a class="btn btn--primary btn--lg btn--block" href="#contato" data-demo>Solicitar demonstração</a>
+    </nav>
+  </div>
+</header>
+
+<main id="conteudo" tabindex="-1">
+
+  <!-- HERO -->
+  <section class="hero" id="inicio" aria-labelledby="hero-title">
+    <div class="hero__bg" aria-hidden="true">
+      <div class="hero__grid-lines" id="hero-grid"></div>
+      <div class="ruler ruler--x"></div>
+      <div class="ruler ruler--y"></div>
+    </div>
+    <div class="container hero__layout">
+      <div class="hero__copy">
+        <p class="eyebrow hero-in" style="--i:0">Gestão contínua de exposições</p>
+        <h1 class="display hero-in" style="--i:1" id="hero-title">Gestão contínua de exposições e riscos de segurança para empresas.</h1>
+        <p class="lead hero-in" style="--i:2">O Hesde identifica, prioriza e ajuda a validar riscos em infraestrutura, aplicações, nuvem e identidade. Cada decisão vem com evidência, e cada atividade respeita o escopo autorizado.</p>
+        <div class="hero__ctas hero-in" style="--i:3">
+          <a class="btn btn--primary btn--lg" href="#contato" data-demo>Solicitar demonstração</a>
+          <a class="btn btn--secondary btn--lg" href="#plataforma">Conhecer a plataforma <svg class="ic ic--16" aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
+        </div>
+        <ul class="chips hero__chips hero-in" style="--i:4" role="list" aria-label="O que o Hesde cobre">
+          <li class="chip">Auditoria</li>
+          <li class="chip"><button type="button" class="term" data-term="CTEM">CTEM</button></li>
+          <li class="chip"><button type="button" class="term" data-term="Hardening">Hardening</button></li>
+          <li class="chip">Purple Team</li>
+          <li class="chip">Rust Core</li>
+        </ul>
+      </div>
+
+      <div class="mock hero-in" style="--i:3" id="mock" role="img" aria-label="Simulação do painel do Hesde com dados fictícios: índice de exposição 68 de 100, caindo 4 pontos na semana; 4 exposições críticas, 2 delas validadas; 87% dos controles conformes; achados priorizados e eventos do motor de política.">
+        <div class="mock__top">
+          <span class="wordmark wordmark--mini">HESDE</span>
+          <span class="mock__ctx">CTEM contínuo · Empresa Exemplo S.A.</span>
+          <span class="mock__live"><span class="pulse"></span>Sessão em execução</span>
+        </div>
+        <div class="mock__body">
+          <div class="mock__rail">
+            <span class="is-on"><svg class="ic"><use href="#i-grid"/></svg></span>
+            <span><svg class="ic"><use href="#i-server"/></svg></span>
+            <span><svg class="ic"><use href="#i-flag"/></svg></span>
+            <span><svg class="ic"><use href="#i-flask"/></svg></span>
+            <span><svg class="ic"><use href="#i-file"/></svg></span>
+          </div>
+          <div class="mock__main">
+            <div class="mock__kpis">
+              <div class="kpi">
+                <div class="kpi__label">Índice de exposição</div>
+                <div class="kpi__value"><span id="mock-index" data-count="68">68</span><small>/100</small></div>
+                <div class="kpi__delta t-ok">▼ 4 na semana</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi__label">Exposições críticas</div>
+                <div class="kpi__value t-crit"><span data-count="4">4</span></div>
+                <div class="kpi__delta t-muted">2 validadas</div>
+              </div>
+              <div class="kpi">
+                <div class="kpi__label">Controles conformes</div>
+                <div class="kpi__value"><span data-count="87">87</span><small>%</small></div>
+                <div class="kpi__delta t-ok">▲ 3 p.p.</div>
+              </div>
+            </div>
+            <div class="mock__panel mock__chart" id="mock-chart">
+              <div class="mock__panel-title"><span>Exposições por severidade · últimos 30 dias</span></div>
+              <div class="stack"><div class="stack__fill">
+                <span class="stack__seg seg-crit" style="width:12%"></span><span class="stack__seg seg-high" style="width:24%"></span><span class="stack__seg seg-mid" style="width:34%"></span><span class="stack__seg seg-low" style="width:30%"></span>
+              </div></div>
+              <div class="legend"><span><i class="seg-crit"></i>Crítico 12%</span><span><i class="seg-high"></i>Alto 24%</span><span><i class="seg-mid"></i>Médio 34%</span><span><i class="seg-low"></i>Baixo 30%</span></div>
+              <svg class="spark" viewBox="0 0 300 40" preserveAspectRatio="none"><path class="spark__area" id="mock-spark-area" d="M0 40V10H300V40Z"/><path class="spark__line" id="mock-spark-line" pathLength="1" vector-effect="non-scaling-stroke" d="M0 10H300"/></svg>
+            </div>
+            <div class="mock__panel">
+              <div class="mock__panel-title"><span>Achados priorizados</span><span class="t-muted">4 de 17</span></div>
+              <div class="mock__list" id="mock-list">
+                <div class="mock__row"><span class="badge badge--crit"><svg class="ic"><use href="#i-sev-crit"/></svg>Crítico</span><span class="mock__row-title">Contas privilegiadas sem MFA</span><span class="mock__row-asset">dc-01</span></div>
+                <div class="mock__row"><span class="badge badge--crit"><svg class="ic"><use href="#i-sev-crit"/></svg>Crítico</span><span class="mock__row-title">VPN fora do suporte</span><span class="mock__row-asset">vpn-borda-01</span></div>
+                <div class="mock__row"><span class="badge badge--high"><svg class="ic"><use href="#i-sev-high"/></svg>Alto</span><span class="mock__row-title">Banco acessível da rede de usuários</span><span class="mock__row-asset">db-clientes-01</span></div>
+                <div class="mock__row"><span class="badge badge--mid"><svg class="ic"><use href="#i-sev-mid"/></svg>Médio</span><span class="mock__row-title">Certificado expira em 12 dias</span><span class="mock__row-asset">portal</span></div>
+                <div class="mock__pointer" id="mock-pointer"><svg viewBox="0 0 18 18"><path d="M2 1.5l12 7.2-5.2 1.3L6.4 15z"/></svg></div>
+                <div class="mock__detail" id="mock-detail">Prioridade 1 · Corrigir em 7 dias · ativo crítico · sem MFA</div>
+              </div>
+              <div class="mock__feed" id="mock-feed"></div>
+            </div>
+          </div>
+        </div>
+        <span class="mock__caption">Dados fictícios</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROBLEMA -->
+  <section class="section" id="problema" aria-labelledby="problema-title">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">O problema</p>
+        <h2 class="h2" id="problema-title">Vulnerabilidades não são o problema. Falta de contexto é.</h2>
+        <p class="lead">Times de segurança recebem milhares de alertas, CVEs e relatórios por mês, quase sempre sem uma ordem clara do que corrigir primeiro. O resultado é esforço alto, risco que continua e pouca evidência para mostrar à gestão e à auditoria.</p>
+      </div>
+      <div class="grid-3">
+        <article class="card card--hover" data-reveal>
+          <span class="tile" aria-hidden="true"><svg class="ic"><use href="#i-noise"/></svg></span>
+          <h3 class="h3">Excesso de falsos positivos</h3>
+          <p>Ferramentas que reportam tudo como urgente consomem horas de triagem e escondem o que de fato importa.</p>
+        </article>
+        <article class="card card--hover" data-reveal>
+          <span class="tile" aria-hidden="true"><svg class="ic"><use href="#i-scale"/></svg></span>
+          <h3 class="h3">Prioridade sem risco de negócio</h3>
+          <p>Uma nota CVSS alta num servidor isolado pesa o mesmo que numa VPN exposta. Sem contexto do ativo, a fila fica errada.</p>
+        </article>
+        <article class="card card--hover" data-reveal>
+          <span class="tile" aria-hidden="true"><svg class="ic"><use href="#i-clipboard"/></svg></span>
+          <h3 class="h3">Controles sem comprovação</h3>
+          <p>EDR, SIEM e políticas existem, mas ninguém consegue demonstrar com evidência se detectam e bloqueiam o que deveriam.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOLUÇÃO -->
+  <section class="section section--alt" id="solucao" aria-labelledby="solucao-title">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">A solução</p>
+        <h2 class="h2" id="solucao-title">Do inventário à decisão de segurança.</h2>
+        <p class="lead">O Hesde segue o ciclo de <button type="button" class="term" data-term="CTEM">CTEM</button>: cada etapa alimenta a próxima, e cada achado técnico vira uma decisão prática, com responsável, prazo e evidência.</p>
+      </div>
+      <div class="flow" id="flow" data-reveal>
+        <div class="flow__steps" role="tablist" aria-label="Etapas do ciclo de CTEM">
+          <div class="flow__line" aria-hidden="true"><div class="flow__progress"></div></div>
+          <button class="flow__step" type="button" role="tab" id="flow-tab-1" aria-controls="flow-panel" aria-selected="true" tabindex="0" data-out="Observações" data-text="Encontra hosts, serviços, nomes e contas dentro do escopo aprovado. Cada conexão é conferida antes de sair, e nada fora do escopo é tocado."><span class="flow__dot"></span><span>Descobrir</span></button>
+          <button class="flow__step" type="button" role="tab" id="flow-tab-2" aria-controls="flow-panel" aria-selected="false" tabindex="-1" data-out="Ativos" data-text="Correlaciona o que foi visto num inventário único, com histórico, responsáveis e criticidade de 1 a 5 para cada ativo."><span class="flow__dot"></span><span>Inventariar</span></button>
+          <button class="flow__step" type="button" role="tab" id="flow-tab-3" aria-controls="flow-panel" aria-selected="false" tabindex="-1" data-out="Achados" data-text="Aplica regras versionadas de hardening, vulnerabilidades e segredos sobre as observações, sem voltar ao ambiente."><span class="flow__dot"></span><span>Identificar exposições</span></button>
+          <button class="flow__step" type="button" role="tab" id="flow-tab-4" aria-controls="flow-panel" aria-selected="false" tabindex="-1" data-out="Fila priorizada" data-text="Combina severidade, exposição, criticidade do ativo, EPSS e KEV numa fila explicável. Nunca só pelo CVSS."><span class="flow__dot"></span><span>Priorizar risco</span></button>
+          <button class="flow__step" type="button" role="tab" id="flow-tab-5" aria-controls="flow-panel" aria-selected="false" tabindex="-1" data-out="Evidência" data-text="Confirma, com aprovação humana e ações não destrutivas, se a exposição é real. Fora do laboratório, quem aprova não executa."><span class="flow__dot"></span><span>Validar com segurança</span></button>
+          <button class="flow__step" type="button" role="tab" id="flow-tab-6" aria-controls="flow-panel" aria-selected="false" tabindex="-1" data-out="Cobertura de detecção" data-text="Verifica no SIEM e no EDR se a validação foi detectada e alertada, e em quanto tempo."><span class="flow__dot"></span><span>Detectar</span></button>
+          <button class="flow__step" type="button" role="tab" id="flow-tab-7" aria-controls="flow-panel" aria-selected="false" tabindex="-1" data-out="Plano de ação" data-text="Leva a correção ao time responsável, com prazo pela severidade e integração com o ticketing."><span class="flow__dot"></span><span>Corrigir</span></button>
+          <button class="flow__step" type="button" role="tab" id="flow-tab-8" aria-controls="flow-panel" aria-selected="false" tabindex="-1" data-out="Tendência" data-text="Uma nova verificação confirma a correção. Um achado só fecha com evidência de que passou, nunca pela ausência de dado."><span class="flow__dot"></span><span>Revalidar</span></button>
+        </div>
+        <div class="card flow__card" id="flow-panel" role="tabpanel" aria-labelledby="flow-tab-1" tabindex="0">
+          <div class="fade-swap" data-flow-swap>
+            <p class="flow__count" id="flow-count">Etapa 1 de 8</p>
+            <p class="flow__title" id="flow-title">Descobrir</p>
+          </div>
+          <p class="flow__text fade-swap" data-flow-swap id="flow-text">Encontra hosts, serviços, nomes e contas dentro do escopo aprovado. Cada conexão é conferida antes de sair, e nada fora do escopo é tocado.</p>
+          <span class="chip chip--brand fade-swap" data-flow-swap id="flow-out">Saída: Observações</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRODUTO -->
+  <section class="section product" id="produto" aria-labelledby="produto-title">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">Produto</p>
+        <h2 class="h2" id="produto-title">Dois módulos. Um ciclo contínuo de redução de risco.</h2>
+        <p class="lead">O Audit mostra onde você está exposto. O Validate confirma, com segurança e autorização, se a exposição é real e se os seus controles a detectam.</p>
+      </div>
+      <div class="grid-2">
+        <article class="card card--hover" data-reveal>
+          <div class="product__head">
+            <span class="tile" aria-hidden="true"><svg class="ic"><use href="#i-radar"/></svg></span>
+            <span class="chip chip--brand">Somente leitura por padrão</span>
+          </div>
+          <h3 class="h3">Hesde Audit</h3>
+          <p>Auditoria contínua e inventário, sem alterar nenhum sistema.</p>
+          <ul class="checklist">
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Auditoria de sistemas e inventário de ativos</li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span><button type="button" class="term" data-term="Hardening">Hardening</button> de Linux, Windows, Active Directory, nuvem, containers e Kubernetes</span></li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Detecção de vulnerabilidades e de segredos expostos</li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Análise de configurações com regras versionadas</li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Relatórios técnicos e executivos</li>
+          </ul>
+          <a class="btn btn--ghost" href="#plataforma" data-goto-tab="tab-audit"><span>Ver na plataforma</span><svg class="ic ic--16" aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
+        </article>
+        <article class="card card--hover" data-reveal>
+          <div class="product__head">
+            <span class="tile" aria-hidden="true"><svg class="ic"><use href="#i-flask"/></svg></span>
+            <span class="chip chip--brand">Seguro e não destrutivo</span>
+          </div>
+          <h3 class="h3">Hesde Validate</h3>
+          <p>Validação de riscos com aprovação humana, dentro do escopo aprovado.</p>
+          <ul class="checklist">
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Validação segura e não destrutiva de riscos</li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Evidências técnicas de cada execução</li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Purple Team com mapeamento <button type="button" class="term" data-term="MITRE ATT&amp;CK">MITRE ATT&amp;CK</button></span></li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Verificação de detecção no <button type="button" class="term" data-term="SIEM">SIEM</button> e no EDR</span></li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Confirmação humana e controle rigoroso de escopo</li>
+          </ul>
+          <a class="btn btn--ghost" href="#plataforma" data-goto-tab="tab-validate"><span>Ver na plataforma</span><svg class="ic ic--16" aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- PLATAFORMA -->
+  <section class="section section--alt" id="plataforma" aria-labelledby="plataforma-title">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">Plataforma</p>
+        <h2 class="h2" id="plataforma-title">Experimente a interface.</h2>
+        <p class="lead">Uma simulação da plataforma com dados fictícios. Filtre ativos, confira o escopo, rode uma auditoria, acompanhe uma validação com aprovação humana e verifique a trilha de auditoria.</p>
+      </div>
+
+      <div class="app" id="app" data-reveal>
+        <div class="tabs app__tabs" role="tablist" aria-label="Áreas da plataforma" id="app-tabs">
+          <button class="tab" type="button" role="tab" id="tab-dash" aria-controls="panel-dash" aria-selected="true" tabindex="0">Dashboard</button>
+          <button class="tab" type="button" role="tab" id="tab-audit" aria-controls="panel-audit" aria-selected="false" tabindex="-1">Hesde Audit</button>
+          <button class="tab" type="button" role="tab" id="tab-validate" aria-controls="panel-validate" aria-selected="false" tabindex="-1">Hesde Validate</button>
+          <button class="tab" type="button" role="tab" id="tab-scope" aria-controls="panel-scope" aria-selected="false" tabindex="-1">Escopo</button>
+          <button class="tab" type="button" role="tab" id="tab-trail" aria-controls="panel-trail" aria-selected="false" tabindex="-1">Trilha de auditoria</button>
+          <button class="tab" type="button" role="tab" id="tab-reports" aria-controls="panel-reports" aria-selected="false" tabindex="-1">Relatórios</button>
+          <button class="tab" type="button" role="tab" id="tab-integ" aria-controls="panel-integ" aria-selected="false" tabindex="-1">Integrações</button>
+          <span class="tabs__ink" aria-hidden="true"></span>
+        </div>
+
+        <!-- Aba Dashboard -->
+        <div class="app__panel tabpanel" role="tabpanel" id="panel-dash" aria-labelledby="tab-dash" tabindex="0">
+          <h3 class="sr-only">Dashboard de ativos</h3>
+          <div class="dash__kpis" id="dash-kpis">
+            <div class="kpi-tile"><div class="kpi-tile__label"><svg class="ic t-crit" aria-hidden="true"><use href="#i-sev-crit"/></svg>Críticos</div><div class="kpi-tile__value t-crit" data-kpi="crit">0</div></div>
+            <div class="kpi-tile"><div class="kpi-tile__label"><svg class="ic t-high" aria-hidden="true"><use href="#i-sev-high"/></svg>Altos</div><div class="kpi-tile__value t-high" data-kpi="high">0</div></div>
+            <div class="kpi-tile"><div class="kpi-tile__label"><svg class="ic t-mid" aria-hidden="true"><use href="#i-sev-mid"/></svg>Médios</div><div class="kpi-tile__value t-mid" data-kpi="mid">0</div></div>
+            <div class="kpi-tile"><div class="kpi-tile__label"><svg class="ic" aria-hidden="true"><use href="#i-server"/></svg>Ativos na visão</div><div class="kpi-tile__value" data-kpi="assets">0</div></div>
+            <div class="kpi-tile kpi-tile--chart">
+              <div class="kpi-tile__label">Distribuição dos achados na visão</div>
+              <div class="bars" id="dash-bars" aria-hidden="true">
+                <span class="bars__bar seg-crit"></span><span class="bars__bar seg-high"></span><span class="bars__bar seg-mid"></span><span class="bars__bar seg-low"></span><span class="bars__bar seg-ok"></span>
+              </div>
+              <p class="sr-only" id="dash-bars-text" aria-live="polite"></p>
+            </div>
+          </div>
+          <div class="toolbar">
+            <label class="search">
+              <span class="sr-only">Buscar ativos</span>
+              <svg class="ic" aria-hidden="true"><use href="#i-search"/></svg>
+              <input class="input-plain" type="search" id="dash-search" placeholder="Buscar por nome, endereço, tipo, responsável ou achado" autocomplete="off" spellcheck="false">
+            </label>
+            <select class="input-plain select-plain" id="dash-env" aria-label="Ambiente">
+              <option value="all">Todos os ambientes</option>
+              <option value="prod">Produção</option>
+              <option value="hml">Homologação</option>
+              <option value="dev">Desenvolvimento</option>
+              <option value="lab">Laboratório</option>
+            </select>
+            <button class="switch" type="button" role="switch" aria-checked="false" id="dash-internet"><span class="switch__track" aria-hidden="true"></span><span>Só expostos à internet</span></button>
+            <div class="toolbar__row">
+              <div class="chips" role="group" aria-label="Filtrar por risco" id="dash-sev">
+                <button class="chip chip--filter" type="button" aria-pressed="false" data-sev="crit"><svg class="ic t-crit" aria-hidden="true"><use href="#i-sev-crit"/></svg>Crítico</button>
+                <button class="chip chip--filter" type="button" aria-pressed="false" data-sev="high"><svg class="ic t-high" aria-hidden="true"><use href="#i-sev-high"/></svg>Alto</button>
+                <button class="chip chip--filter" type="button" aria-pressed="false" data-sev="mid"><svg class="ic t-mid" aria-hidden="true"><use href="#i-sev-mid"/></svg>Médio</button>
+                <button class="chip chip--filter" type="button" aria-pressed="false" data-sev="low"><svg class="ic t-low" aria-hidden="true"><use href="#i-sev-low"/></svg>Baixo</button>
+                <button class="chip chip--filter" type="button" aria-pressed="false" data-sev="ok"><svg class="ic t-ok" aria-hidden="true"><use href="#i-sev-ok"/></svg>Conforme</button>
+              </div>
+              <span class="small muted" id="dash-status" aria-live="polite"></span>
+            </div>
+          </div>
+          <div class="dash__body">
+            <div class="dash__table">
+              <div class="table-wrap">
+                <table class="table">
+                  <caption class="sr-only">Ativos ordenados por prioridade. Selecione uma linha para ver os detalhes.</caption>
+                  <thead><tr><th scope="col">Ativo</th><th scope="col">Tipo</th><th scope="col">Ambiente</th><th scope="col">Achados</th><th scope="col">Risco</th></tr></thead>
+                  <tbody id="dash-rows"></tbody>
+                </table>
+                <div class="empty" id="dash-empty" hidden>
+                  <svg class="ic" aria-hidden="true"><use href="#i-search"/></svg>
+                  <p class="h4">Nenhum ativo encontrado</p>
+                  <p>Nenhum ativo corresponde aos filtros atuais.</p>
+                  <button class="btn btn--secondary btn--sm" type="button" id="dash-clear">Limpar filtros</button>
+                </div>
+              </div>
+            </div>
+            <aside class="box detail" id="dash-detail" aria-label="Detalhes do ativo" aria-live="polite">
+              <div class="empty">
+                <svg class="ic" aria-hidden="true"><use href="#i-server"/></svg>
+                <p class="h4">Selecione um ativo</p>
+                <p>Clique numa linha da tabela para ver fatos, achados e ações recomendadas.</p>
+              </div>
+            </aside>
+          </div>
+        </div>
+
+        <!-- Aba Hesde Audit -->
+        <div class="app__panel tabpanel" role="tabpanel" id="panel-audit" aria-labelledby="tab-audit" tabindex="0" hidden>
+          <div class="audit">
+            <div class="box">
+              <div class="panel-title"><h3 class="h4">Cobertura de hardening</h3><span class="badge badge--info"><svg class="ic" aria-hidden="true"><use href="#i-sev-info"/></svg>Somente leitura · N1</span></div>
+              <div class="meters" id="audit-meters"></div>
+              <p class="note" style="margin-top:16px">Percentual de controles conformes por área, a partir de regras versionadas.</p>
+            </div>
+            <div class="box">
+              <div class="panel-title"><h3 class="h4">Execução de auditoria</h3><span class="chip chip--sm">Coleta somente leitura</span></div>
+              <div class="runner__bar">
+                <button class="btn btn--primary" type="button" id="audit-run">Executar auditoria</button>
+                <div class="progress" aria-hidden="true"><div class="progress__bar" id="audit-bar"></div></div>
+                <span class="small muted num" id="audit-pct">0%</span>
+              </div>
+              <div class="log" id="audit-log" role="log" aria-label="Log da auditoria" tabindex="0"><p class="log__empty">O log aparece aqui, linha a linha, enquanto a auditoria roda.</p></div>
+              <div class="result" id="audit-result" aria-live="polite"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Aba Hesde Validate -->
+        <div class="app__panel tabpanel" role="tabpanel" id="panel-validate" aria-labelledby="tab-validate" tabindex="0" hidden>
+          <div class="val">
+            <div class="box">
+              <h3 class="h4">Pedido de validação</h3>
+              <label class="ds__sub" for="val-target" style="display:block">Alvo</label>
+              <select class="input-plain select-plain" id="val-target"></select>
+              <dl class="facts">
+                <dt>Técnica</dt><dd><button type="button" class="term" data-term="MITRE ATT&amp;CK">MITRE ATT&amp;CK</button> T1078 · Contas válidas</dd>
+                <dt>Ação</dt><dd>Login com conta de teste autorizada</dd>
+                <dt>Natureza</dt><dd>Evento benigno e detectável, sem alteração</dd>
+                <dt>Nível</dt><dd><span class="chip chip--brand chip--sm"><button type="button" class="term" data-term="N0–N3">N3</button>&nbsp;· exige aprovação</span></dd>
+              </dl>
+              <button class="btn btn--primary btn--block" type="button" id="val-eval">Avaliar com o motor de política</button>
+              <div class="decision" id="val-decision" aria-live="polite"></div>
+              <button class="btn btn--ghost" type="button" id="val-reset" style="margin-top:12px"><svg class="ic ic--16" aria-hidden="true"><use href="#i-refresh"/></svg><span>Recomeçar simulação</span></button>
+            </div>
+            <div class="box">
+              <h3 class="h4" style="margin-bottom:20px">Fluxo da validação</h3>
+              <ol class="vsteps" id="val-steps">
+                <li class="vstep is-current" data-step="1">
+                  <span class="vstep__dot">1</span>
+                  <h4 class="vstep__title">Decisão de política</h4>
+                  <div class="vstep__body"><div data-msg>Escolha o alvo e avalie o pedido. O motor decide antes de qualquer atividade.</div></div>
+                </li>
+                <li class="vstep is-pending" data-step="2">
+                  <span class="vstep__dot">2</span>
+                  <h4 class="vstep__title">Aprovação humana</h4>
+                  <div class="vstep__body">
+                    <div class="vstep__actions">
+                      <button class="btn btn--secondary btn--sm" type="button" id="val-approve-self" disabled>Aprovar como você (executor)</button>
+                      <button class="btn btn--secondary btn--sm" type="button" id="val-approve-other" disabled>Aprovar como segundo operador</button>
+                    </div>
+                    <div data-msg></div>
+                  </div>
+                </li>
+                <li class="vstep is-pending" data-step="3">
+                  <span class="vstep__dot">3</span>
+                  <h4 class="vstep__title">Execução segura</h4>
+                  <div class="vstep__body">
+                    <div class="vstep__actions"><button class="btn btn--primary btn--sm" type="button" id="val-run" disabled>Executar validação</button></div>
+                    <div data-msg></div>
+                  </div>
+                </li>
+                <li class="vstep is-pending" data-step="4">
+                  <span class="vstep__dot">4</span>
+                  <h4 class="vstep__title">Detecção</h4>
+                  <div class="vstep__body">
+                    <button class="switch" type="button" role="switch" aria-checked="false" id="val-nodetect"><span class="switch__track" aria-hidden="true"></span><span>Simular detecção ausente</span></button>
+                    <div data-msg></div>
+                  </div>
+                </li>
+                <li class="vstep is-pending" data-step="5">
+                  <span class="vstep__dot">5</span>
+                  <h4 class="vstep__title">Evidência</h4>
+                  <div class="vstep__body"><div data-msg>A evidência é registrada e ancorada na trilha ao fim da execução.</div></div>
+                </li>
+              </ol>
+            </div>
+          </div>
+        </div>
+
+        <!-- Aba Escopo -->
+        <div class="app__panel tabpanel" role="tabpanel" id="panel-scope" aria-labelledby="tab-scope" tabindex="0" hidden>
+          <div class="scope">
+            <div class="box">
+              <div class="panel-title"><h3 class="h4">Escopo aprovado · versão 3</h3><span class="badge badge--ok"><svg class="ic" aria-hidden="true"><use href="#i-sev-ok"/></svg>Aprovado</span></div>
+              <p class="small muted" style="margin:-8px 0 14px">Autorização vigente até 31/12/2026</p>
+              <div class="table-wrap">
+                <table class="table">
+                  <caption class="sr-only">Entradas do escopo aprovado, versão 3</caption>
+                  <thead><tr><th scope="col">Tipo</th><th scope="col">Valor</th><th scope="col">Ambiente</th><th scope="col">Teto</th></tr></thead>
+                  <tbody id="scope-rows"></tbody>
+                </table>
+              </div>
+              <p class="note row" style="margin-top:12px;gap:6px"><svg class="ic ic--16" aria-hidden="true"><use href="#i-lock"/></svg>Exclusões sempre prevalecem.</p>
+            </div>
+            <div class="box">
+              <h3 class="h4">Verificar alvo</h3>
+              <form class="checker__form" id="scope-form" novalidate>
+                <label class="sr-only" for="scope-input">Alvo: IPv4, faixa CIDR ou nome</label>
+                <input class="input-plain mono" id="scope-input" type="text" placeholder="IPv4, CIDR ou nome" autocomplete="off" spellcheck="false" autocapitalize="off">
+                <button class="btn btn--primary" type="submit" id="scope-submit">Verificar</button>
+              </form>
+              <div class="chips checker__suggest" role="group" aria-label="Exemplos para verificar">
+                <button class="chip chip--filter" type="button" data-try="192.0.2.10">192.0.2.10</button>
+                <button class="chip chip--filter" type="button" data-try="192.0.2.1">192.0.2.1</button>
+                <button class="chip chip--filter" type="button" data-try="::ffff:192.0.2.1">::ffff:192.0.2.1</button>
+                <button class="chip chip--filter" type="button" data-try="192.0.02.10">192.0.02.10</button>
+                <button class="chip chip--filter" type="button" data-try="192.0.2.0/24">192.0.2.0/24</button>
+                <button class="chip chip--filter" type="button" data-try="198.51.100.200">198.51.100.200</button>
+                <button class="chip chip--filter" type="button" data-try="203.0.113.200">203.0.113.200</button>
+                <button class="chip chip--filter" type="button" data-try="portal.empresa.example">portal.empresa.example</button>
+                <button class="chip chip--filter" type="button" data-try="intranet.empresa.example">intranet.empresa.example</button>
+              </div>
+              <div class="checker__result" id="scope-result" aria-live="polite"></div>
+              <p class="note">Cada conexão de rede é conferida contra o escopo antes de sair, inclusive depois da resolução de nomes.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Aba Trilha de auditoria -->
+        <div class="app__panel tabpanel trail" role="tabpanel" id="panel-trail" aria-labelledby="tab-trail" tabindex="0" hidden>
+          <h3 class="sr-only">Trilha de auditoria</h3>
+          <div class="trail__bar">
+            <div class="row">
+              <span class="small muted" id="trail-sim-label">Simular</span>
+              <div class="seg" role="radiogroup" aria-labelledby="trail-sim-label" id="trail-sim" data-seg>
+                <button class="seg__opt" type="button" role="radio" aria-checked="true" tabindex="0" data-value="none">Nenhuma alteração</button>
+                <button class="seg__opt" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="edit">Editar o evento 5</button>
+                <button class="seg__opt" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="rewrite">Reescrever a trilha com hashes recalculados</button>
+              </div>
+            </div>
+            <div class="row">
+              <button class="btn btn--primary" type="button" id="trail-verify">Verificar integridade</button>
+              <button class="btn btn--secondary" type="button" id="trail-export"><svg class="ic ic--16" aria-hidden="true"><use href="#i-download"/></svg>Exportar para verificação offline</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="table">
+              <caption class="sr-only">Eventos da trilha de auditoria, encadeados por hash</caption>
+              <thead><tr><th scope="col">Seq · horário</th><th scope="col">Ator</th><th scope="col">Ação</th><th scope="col">Resultado</th><th scope="col">prev_hash</th><th scope="col">hash</th><th scope="col"><span class="sr-only">Verificação</span></th></tr></thead>
+              <tbody id="trail-rows"></tbody>
+            </table>
+          </div>
+          <div class="anchor" id="trail-anchor"><svg class="ic" aria-hidden="true"><use href="#i-anchor"/></svg><span>Âncora assinada · seq 8 · Ed25519 · chave <code class="mono">ed25519:3f2a…91bc</code></span><span class="trail__check" id="trail-anchor-check" aria-hidden="true"><svg class="ic"><use href="#i-check"/></svg></span></div>
+          <div class="trail__result" id="trail-result" aria-live="polite"></div>
+        </div>
+
+        <!-- Aba Relatórios -->
+        <div class="app__panel tabpanel" role="tabpanel" id="panel-reports" aria-labelledby="tab-reports" tabindex="0" hidden>
+          <div class="reports">
+            <div>
+              <h3 class="h4" style="margin-bottom:14px" id="rep-kind-label">Tipo de relatório</h3>
+              <div class="seg" role="radiogroup" aria-labelledby="rep-kind-label" id="rep-kind" data-seg>
+                <button class="seg__opt" type="button" role="radio" aria-checked="true" tabindex="0" data-value="exec">Executivo</button>
+                <button class="seg__opt" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="tech">Técnico</button>
+              </div>
+              <p class="reports__desc fade-swap" id="rep-desc">Para diretoria e comitês: postura, tendência, riscos principais e plano de ação, sem jargão.</p>
+              <fieldset class="radio-chips" style="margin-bottom:24px">
+                <legend>Formato</legend>
+                <label class="radio-chip"><input type="radio" name="rep-fmt" value="PDF" checked><span>PDF</span></label>
+                <label class="radio-chip"><input type="radio" name="rep-fmt" value="HTML"><span>HTML</span></label>
+                <label class="radio-chip"><input type="radio" name="rep-fmt" value="JSON"><span>JSON</span></label>
+                <label class="radio-chip"><input type="radio" name="rep-fmt" value="CSV"><span>CSV</span></label>
+                <label class="radio-chip"><input type="radio" name="rep-fmt" value="SARIF"><span>SARIF</span></label>
+              </fieldset>
+              <button class="btn btn--primary" type="button" id="rep-gen">Gerar relatório</button>
+              <p class="note" style="margin-top:16px">Cada relatório sai com manifesto assinado: dá para provar que não foi alterado depois de gerado.</p>
+            </div>
+            <div class="paper-stage" id="rep-stage" aria-live="polite">
+              <div class="box empty" style="min-height:460px;align-content:center">
+                <svg class="ic" aria-hidden="true"><use href="#i-file"/></svg>
+                <p class="h4">Nenhuma prévia ainda</p>
+                <p>Escolha o tipo e o formato e gere o relatório para ver a prévia.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Aba Integrações -->
+        <div class="app__panel tabpanel" role="tabpanel" id="panel-integ" aria-labelledby="tab-integ" tabindex="0" hidden>
+          <h3 class="sr-only">Integrações</h3>
+          <div class="integ" id="integ">
+            <article class="integ__card" data-integ="siem">
+              <span class="tile" aria-hidden="true"><svg class="ic"><use href="#i-activity"/></svg></span>
+              <h4 class="h4"><button type="button" class="term" data-term="SIEM">SIEM</button></h4>
+              <p>Eventos de auditoria e achados via syslog (CEF) ou HTTPS. Consultas de detecção para o Validate.</p>
+              <div class="integ__actions"><button class="btn btn--secondary btn--sm" type="button" data-connect>Conectar</button></div>
+            </article>
+            <article class="integ__card" data-integ="soar">
+              <span class="tile" aria-hidden="true"><svg class="ic"><use href="#i-zap"/></svg></span>
+              <h4 class="h4"><button type="button" class="term" data-term="SOAR">SOAR</button></h4>
+              <p>Webhooks assinados com HMAC para disparar playbooks de resposta.</p>
+              <div class="integ__actions">
+                <p class="integ__err" role="alert"><svg class="ic" aria-hidden="true"><use href="#i-sev-crit"/></svg><span data-err></span></p>
+                <button class="btn btn--secondary btn--sm" type="button" data-connect>Conectar</button>
+              </div>
+            </article>
+            <article class="integ__card" data-integ="ticketing">
+              <span class="tile" aria-hidden="true"><svg class="ic"><use href="#i-ticket"/></svg></span>
+              <h4 class="h4">Ticketing</h4>
+              <p>Jira, GitHub Issues e GitLab Issues, com responsável e prazo por severidade.</p>
+              <div class="integ__actions"><button class="btn btn--secondary btn--sm" type="button" data-connect>Conectar</button></div>
+            </article>
+            <article class="integ__card" data-integ="grc">
+              <span class="tile" aria-hidden="true"><svg class="ic"><use href="#i-building"/></svg></span>
+              <h4 class="h4"><button type="button" class="term" data-term="GRC">GRC</button> e gestão de vulnerabilidades</h4>
+              <p>Exportação para DefectDojo e mapeamento para ISO/IEC 27001, CIS Controls e LGPD.</p>
+              <div class="integ__actions"><button class="btn btn--secondary btn--sm" type="button" data-connect>Conectar</button></div>
+            </article>
+            <article class="integ__card">
+              <span class="tile" aria-hidden="true"><svg class="ic"><use href="#i-braces"/></svg></span>
+              <h4 class="h4">Formatos abertos</h4>
+              <p>SARIF, OCSF, CycloneDX e CSV com neutralização de fórmulas.</p>
+              <div class="integ__actions"><span class="badge badge--ok"><svg class="ic" aria-hidden="true"><use href="#i-sev-ok"/></svg>Incluído</span></div>
+            </article>
+            <p class="note integ__note">Destinos só em lista de permissão, TLS verificado e credenciais em cofre. Simulação: nenhuma conexão real é feita.</p>
+          </div>
+        </div>
+
+        <p class="app__foot"><svg class="ic" aria-hidden="true"><use href="#i-sev-info"/></svg>Dados fictícios. Endereços e domínios reservados para documentação. Nenhuma credencial é exibida.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ANTES E DEPOIS -->
+  <section class="section" id="antes-depois" aria-labelledby="cmp-title">
+    <div class="container">
+      <div class="section-head section-head--center" data-reveal>
+        <p class="eyebrow">Antes e depois</p>
+        <h2 class="h2" id="cmp-title">Do ruído ao plano de ação.</h2>
+        <p class="lead">Arraste o controle para comparar o dia a dia sem e com o Hesde.</p>
+      </div>
+      <div class="compare" id="compare" data-reveal>
+        <div class="compare__controls">
+          <div class="seg" role="radiogroup" aria-label="Tema da comparação" id="cmp-theme" data-seg>
+            <button class="seg__opt" type="button" role="radio" aria-checked="true" tabindex="0" data-value="alerts">Alertas</button>
+            <button class="seg__opt" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="reports">Relatórios</button>
+            <button class="seg__opt" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="visibility">Visibilidade</button>
+          </div>
+        </div>
+        <div class="compare__stage" id="cmp-stage">
+          <div class="compare__layer compare__layer--before" aria-label="Sem Hesde">
+            <span class="compare__tag">Sem Hesde</span>
+            <div class="compare__content" data-cmp="alerts">
+              <p class="compare__title">Fila sem contexto</p>
+              <div class="noise" style="margin-top:16px">
+                <span class="badge badge--high"><svg class="ic" aria-hidden="true"><use href="#i-sev-high"/></svg>ALTA · porta aberta</span>
+                <span class="badge badge--high"><svg class="ic" aria-hidden="true"><use href="#i-sev-high"/></svg>ALTA · versão antiga</span>
+                <span class="badge badge--high"><svg class="ic" aria-hidden="true"><use href="#i-sev-high"/></svg>ALTA · TLS fraco</span>
+                <span class="badge badge--high"><svg class="ic" aria-hidden="true"><use href="#i-sev-high"/></svg>ALTA · patch pendente</span>
+                <span class="badge badge--high"><svg class="ic" aria-hidden="true"><use href="#i-sev-high"/></svg>ALTA · serviço exposto</span>
+                <span class="badge badge--high"><svg class="ic" aria-hidden="true"><use href="#i-sev-high"/></svg>ALTA · cabeçalho ausente</span>
+                <span class="badge badge--high"><svg class="ic" aria-hidden="true"><use href="#i-sev-high"/></svg>ALTA · log desativado</span>
+                <span class="badge badge--high"><svg class="ic" aria-hidden="true"><use href="#i-sev-high"/></svg>ALTA · conta inativa</span>
+                <span class="badge badge--high"><svg class="ic" aria-hidden="true"><use href="#i-sev-high"/></svg>ALTA · certificado</span>
+                <span class="badge badge--high"><svg class="ic" aria-hidden="true"><use href="#i-sev-high"/></svg>ALTA · SMB</span>
+                <span class="badge badge--high"><svg class="ic" aria-hidden="true"><use href="#i-sev-high"/></svg>ALTA · banner</span>
+                <span class="badge badge--high"><svg class="ic" aria-hidden="true"><use href="#i-sev-high"/></svg>ALTA · senha antiga</span>
+              </div>
+            </div>
+            <div class="compare__content" data-cmp="reports" hidden>
+              <p class="compare__title">Relatório de 180 páginas</p>
+              <div class="lines-static" style="margin-top:16px" aria-hidden="true"><span style="width:92%"></span><span style="width:78%"></span><span style="width:85%"></span><span style="width:64%"></span><span style="width:88%"></span><span style="width:72%"></span><span style="width:80%"></span></div>
+            </div>
+            <div class="compare__content" data-cmp="visibility" hidden>
+              <p class="compare__title">Uma fotografia por ano</p>
+              <div class="months months--before" style="margin-top:16px" aria-hidden="true"><span></span><span></span><span class="is-shot"></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+              <p class="months__label">jan a dez · uma auditoria</p>
+            </div>
+            <p class="compare__caption" data-cmp-caption="alerts">Sem contexto do ativo, tudo pesa igual e o time decide no escuro.</p>
+            <p class="compare__caption" data-cmp-caption="reports" hidden>A diretoria não lê, e o time técnico não sabe por onde começar.</p>
+            <p class="compare__caption" data-cmp-caption="visibility" hidden>Entre uma auditoria e outra, o risco muda e ninguém vê.</p>
+          </div>
+          <div class="compare__layer compare__layer--after" aria-label="Com Hesde">
+            <span class="compare__tag">Com Hesde</span>
+            <div class="compare__content" data-cmp="alerts">
+              <p class="compare__title">Três decisões para hoje</p>
+              <div class="decisions" style="margin-top:16px">
+                <div class="decision-row">MFA nas contas privilegiadas do AD <span class="badge badge--crit"><svg class="ic" aria-hidden="true"><use href="#i-sev-crit"/></svg>Crítico · 7 dias</span></div>
+                <div class="decision-row">Atualizar o gateway de VPN exposto <span class="badge badge--crit"><svg class="ic" aria-hidden="true"><use href="#i-sev-crit"/></svg>Crítico · 7 dias</span></div>
+                <div class="decision-row">Restringir o banco à rede de aplicação <span class="badge badge--high"><svg class="ic" aria-hidden="true"><use href="#i-sev-high"/></svg>Alto · 30 dias</span></div>
+              </div>
+            </div>
+            <div class="compare__content" data-cmp="reports" hidden>
+              <p class="compare__title">Plano de ação claro</p>
+              <div class="decisions" style="margin-top:16px">
+                <div class="decision-row">Exigir MFA nas contas privilegiadas <span class="chip chip--sm">Identidade e acesso · até 21/10/2026</span></div>
+                <div class="decision-row">Atualizar o gateway de VPN <span class="chip chip--sm">Infraestrutura de rede · até 21/10/2026</span></div>
+                <div class="decision-row">Bloquear o acesso público ao bucket de backups <span class="chip chip--sm">Plataforma de nuvem · até 21/10/2026</span></div>
+              </div>
+            </div>
+            <div class="compare__content" data-cmp="visibility" hidden>
+              <p class="compare__title">Visibilidade contínua</p>
+              <div class="months months--after" style="margin-top:16px" aria-hidden="true"><span style="height:92%"></span><span style="height:88%"></span><span style="height:86%"></span><span style="height:83%"></span><span style="height:80%"></span><span style="height:79%"></span><span style="height:76%"></span><span style="height:74%"></span><span style="height:72%"></span><span style="height:71%"></span><span style="height:69%"></span><span style="height:68%"></span></div>
+              <p class="months__label">Índice de exposição por mês · tendência de queda</p>
+            </div>
+            <p class="compare__caption" data-cmp-caption="alerts">O resto continua visível, em ordem de risco, com prazo.</p>
+            <p class="compare__caption" data-cmp-caption="reports" hidden>Uma página para o comitê e o detalhe técnico para quem corrige, da mesma base.</p>
+            <p class="compare__caption" data-cmp-caption="visibility" hidden>Índice de exposição atualizado a cada sessão, com tendência e comparação entre períodos.</p>
+          </div>
+          <input class="compare__range" type="range" min="0" max="100" value="50" step="1" id="cmp-range" aria-label="Comparar sem e com o Hesde" aria-valuetext="50% mostrando com Hesde">
+          <div class="compare__handle" aria-hidden="true"><span class="compare__knob"><svg class="ic"><use href="#i-arrows-h"/></svg></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RECURSOS -->
+  <section class="section section--alt" id="recursos" aria-labelledby="recursos-title">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">Recursos</p>
+        <h2 class="h2" id="recursos-title">O essencial para reduzir exposição com método.</h2>
+      </div>
+      <div class="grid-3">
+        <article class="card card--hover feature" data-reveal>
+          <span class="tile" aria-hidden="true"><svg class="ic"><use href="#i-layers"/></svg></span>
+          <h3 class="h3">Inventário e descoberta de ativos</h3>
+          <p>Hosts, serviços, contas, nuvem e código num inventário só, com histórico do que apareceu e sumiu.</p>
+          <div class="expand feature__more" id="feat-1"><div><p>A correlação de identidade usa identificadores fortes, como número de série e ID de instância. Um IP repetido sozinho não funde dois ativos.</p></div></div>
+          <button class="btn btn--ghost feature__toggle" type="button" aria-expanded="false" aria-controls="feat-1"><span>Detalhes</span><svg class="ic ic--16" aria-hidden="true"><use href="#i-chevron-down"/></svg></button>
+        </article>
+        <article class="card card--hover feature" data-reveal>
+          <span class="tile" aria-hidden="true"><svg class="ic"><use href="#i-list"/></svg></span>
+          <h3 class="h3">Priorização contextual de riscos</h3>
+          <p>Severidade, exposição, criticidade do ativo, <button type="button" class="term" data-term="EPSS">EPSS</button> e <button type="button" class="term" data-term="KEV">KEV</button> combinados numa fila explicável.</p>
+          <div class="expand feature__more" id="feat-2"><div><p>Nunca só pelo CVSS. Cada classificação mostra os fatores que a produziram, e os prazos seguem a severidade: 7, 30, 90 e 180 dias, ajustáveis.</p></div></div>
+          <button class="btn btn--ghost feature__toggle" type="button" aria-expanded="false" aria-controls="feat-2"><span>Detalhes</span><svg class="ic ic--16" aria-hidden="true"><use href="#i-chevron-down"/></svg></button>
+        </article>
+        <article class="card card--hover feature" data-reveal>
+          <span class="tile" aria-hidden="true"><svg class="ic"><use href="#i-shield"/></svg></span>
+          <h3 class="h3">Análise de hardening</h3>
+          <p>Linux, Windows, Active Directory, nuvem, containers e Kubernetes avaliados contra regras versionadas.</p>
+          <div class="expand feature__more" id="feat-3"><div><p>Fato e julgamento ficam separados: a observação bruta é guardada, e regras novas podem ser reaplicadas sobre dados antigos sem tocar no ambiente de novo.</p></div></div>
+          <button class="btn btn--ghost feature__toggle" type="button" aria-expanded="false" aria-controls="feat-3"><span>Detalhes</span><svg class="ic ic--16" aria-hidden="true"><use href="#i-chevron-down"/></svg></button>
+        </article>
+        <article class="card card--hover feature" data-reveal>
+          <span class="tile" aria-hidden="true"><svg class="ic"><use href="#i-key"/></svg></span>
+          <h3 class="h3">Detecção de segredos e vulnerabilidades</h3>
+          <p>Chaves, tokens e senhas expostos são encontrados e mascarados antes de qualquer gravação.</p>
+          <div class="expand feature__more" id="feat-4"><div><p>Guardamos só o tipo, uma prévia mascarada e uma impressão digital com chave da instalação. O Hesde não testa se a credencial funciona: a recomendação é sempre rotacionar.</p></div></div>
+          <button class="btn btn--ghost feature__toggle" type="button" aria-expanded="false" aria-controls="feat-4"><span>Detalhes</span><svg class="ic ic--16" aria-hidden="true"><use href="#i-chevron-down"/></svg></button>
+        </article>
+        <article class="card card--hover feature" data-reveal>
+          <span class="tile" aria-hidden="true"><svg class="ic"><use href="#i-file"/></svg></span>
+          <h3 class="h3">Relatórios técnicos e executivos</h3>
+          <p>A mesma base gera a visão do analista e a do comitê, com classificação de confidencialidade.</p>
+          <div class="expand feature__more" id="feat-5"><div><p>PDF, HTML, JSON, CSV e SARIF. Cada relatório leva as versões de regras e feeds, para ser reproduzível, e um manifesto assinado.</p></div></div>
+          <button class="btn btn--ghost feature__toggle" type="button" aria-expanded="false" aria-controls="feat-5"><span>Detalhes</span><svg class="ic ic--16" aria-hidden="true"><use href="#i-chevron-down"/></svg></button>
+        </article>
+        <article class="card card--hover feature" data-reveal>
+          <span class="tile" aria-hidden="true"><svg class="ic"><use href="#i-plug"/></svg></span>
+          <h3 class="h3">Integração com SIEM, SOAR, ticketing e GRC</h3>
+          <p>Os achados chegam onde o time já trabalha, com responsável e prazo: <button type="button" class="term" data-term="SIEM">SIEM</button>, <button type="button" class="term" data-term="SOAR">SOAR</button>, ticketing e <button type="button" class="term" data-term="GRC">GRC</button>.</p>
+          <div class="expand feature__more" id="feat-6"><div><p>Webhooks assinados, destinos em lista de permissão e minimização de dados: só sai do Hesde o necessário para cada integração.</p></div></div>
+          <button class="btn btn--ghost feature__toggle" type="button" aria-expanded="false" aria-controls="feat-6"><span>Detalhes</span><svg class="ic ic--16" aria-hidden="true"><use href="#i-chevron-down"/></svg></button>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMO FUNCIONA -->
+  <section class="section" id="como-funciona" aria-labelledby="como-title">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">Como funciona</p>
+        <h2 class="h2" id="como-title">Quatro passos do primeiro acesso ao acompanhamento contínuo.</h2>
+      </div>
+      <div class="how-wrap" id="how">
+      <div class="how__line" aria-hidden="true"><span class="how__fill"></span></div>
+      <ol class="how" role="list">
+        <li class="how__step">
+          <span class="numeral" aria-hidden="true">01</span>
+          <h3 class="h3"><span class="sr-only">Passo 1: </span>Conecte o ambiente</h3>
+          <p>Defina o escopo, registre a autorização e escolha o modo: portátil, remoto ou nuvem, sempre com contas de menor privilégio.</p>
+        </li>
+        <li class="how__step">
+          <span class="numeral" aria-hidden="true">02</span>
+          <h3 class="h3"><span class="sr-only">Passo 2: </span>Execute a auditoria</h3>
+          <p>Coleta somente leitura, dentro da janela combinada, com cada atividade decidida pelo motor de política e registrada.</p>
+        </li>
+        <li class="how__step">
+          <span class="numeral" aria-hidden="true">03</span>
+          <h3 class="h3"><span class="sr-only">Passo 3: </span>Priorize os riscos</h3>
+          <p>Achados ordenados por risco real ao negócio, com fatores visíveis, responsável e prazo.</p>
+        </li>
+        <li class="how__step">
+          <span class="numeral" aria-hidden="true">04</span>
+          <h3 class="h3"><span class="sr-only">Passo 4: </span>Corrija, valide e acompanhe</h3>
+          <p>Confirme correções com nova verificação, valide detecções com segurança e acompanhe a evolução entre sessões.</p>
+        </li>
+      </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEGURANÇA E CONFIANÇA -->
+  <section class="section band-sec" id="seguranca" aria-labelledby="seg-title">
+    <div class="container sec">
+      <div class="sec__left">
+        <p class="eyebrow">Segurança e confiança</p>
+        <h2 class="h2" id="seg-title">Construído com segurança desde o núcleo.</h2>
+        <p class="lead" style="margin-top:20px">Uma ferramenta que olha para as fraquezas de uma empresa precisa ser mais rigorosa que o ambiente que audita. Os controles abaixo valem em todos os planos e não são vendidos à parte.</p>
+        <blockquote class="sec__quote">Nenhuma exploração destrutiva, nunca. Não existe nível de atividade destrutivo no Hesde.</blockquote>
+      </div>
+      <div class="sec-tl-wrap" id="sec-tl">
+      <div class="sec-tl__line" aria-hidden="true"><span class="sec-tl__fill"></span></div>
+      <ol class="sec-tl">
+        <li><h3>Núcleo em Rust</h3><p>Segurança de memória por padrão e código inseguro proibido no projeto.</p></li>
+        <li><h3>Menor privilégio</h3><p>Contas somente leitura e comandos de uma lista fechada. O que exige mais permissão aparece como "não coberto".</p></li>
+        <li><h3>Controle de escopo</h3><p>Escopo versionado e aprovado. Exclusões prevalecem, e cada conexão de rede é conferida antes de sair.</p></li>
+        <li><h3>Logs de auditoria</h3><p>Trilha encadeada por hash, com âncoras assinadas e verificação offline. Nenhuma alteração entra sem o seu evento.</p></li>
+        <li><h3>Mascaramento de segredos</h3><p>Segredos encontrados são redigidos antes de gravar. Dados cifrados por cliente, com destruição criptográfica ao encerrar.</p></li>
+        <li><h3>Validação humana para ações ativas</h3><p>Toda validação exige aprovação por execução. Fora do laboratório, quem aprova não executa.</p></li>
+        <li><h3>Nenhuma exploração destrutiva por padrão</h3><p>O catálogo de ações é fechado e revisado. Nada de negação de serviço, alteração de dados ou movimentação lateral.</p></li>
+        <li><h3>Pronto para ambientes corporativos</h3><p>Funciona isolado, sem telemetria, com <button type="button" class="term" data-term="SBOM">SBOM</button> de cada versão e releases assinadas.</p></li>
+      </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- PÚBLICO -->
+  <section class="section audience" id="para-quem" aria-labelledby="pq-title">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">Para quem</p>
+        <h2 class="h2" id="pq-title">Uma base comum para quem cuida do risco.</h2>
+      </div>
+      <div class="grid-3">
+        <article class="card card--hover" data-reveal><span class="tile" aria-hidden="true"><svg class="ic"><use href="#i-activity"/></svg></span><h3 class="h3">Times de segurança e SOC</h3><p>Menos triagem manual e detecções comprovadas com eventos controlados.</p></article>
+        <article class="card card--hover" data-reveal><span class="tile" aria-hidden="true"><svg class="ic"><use href="#i-clipboard"/></svg></span><h3 class="h3">Auditoria interna e GRC</h3><p>Evidência verificável, trilha íntegra e mapeamento para normas.</p></article>
+        <article class="card card--hover" data-reveal><span class="tile" aria-hidden="true"><svg class="ic"><use href="#i-server"/></svg></span><h3 class="h3">Infraestrutura e operações</h3><p>Correções claras, priorizadas e sem alterações automáticas nos sistemas.</p></article>
+        <article class="card card--hover" data-reveal><span class="tile" aria-hidden="true"><svg class="ic"><use href="#i-gauge"/></svg></span><h3 class="h3">Technology Risk</h3><p>Risco tecnológico medido de forma consistente e comparável ao longo do tempo.</p></article>
+        <article class="card card--hover" data-reveal><span class="tile" aria-hidden="true"><svg class="ic"><use href="#i-code"/></svg></span><h3 class="h3">Desenvolvimento e AppSec</h3><p>Segredos e dependências vulneráveis no repositório, com saída em SARIF.</p></article>
+        <article class="card card--hover" data-reveal><span class="tile" aria-hidden="true"><svg class="ic"><use href="#i-briefcase"/></svg></span><h3 class="h3">Gestores de TI e C-level</h3><p>Postura de segurança em linguagem de negócio e decisões com prazo.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROVA SOCIAL -->
+  <section class="section section--alt" id="confianca" aria-labelledby="conf-title">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">Confiança</p>
+        <h2 class="h2" id="conf-title">Resultados que a sua equipe consegue demonstrar.</h2>
+      </div>
+      <ul class="proof__metrics" role="list" data-reveal>
+        <li class="proof__metric"><svg class="ic" aria-hidden="true"><use href="#i-filter"/></svg>Menos ruído operacional.</li>
+        <li class="proof__metric"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg>Priorização baseada em risco.</li>
+        <li class="proof__metric"><svg class="ic" aria-hidden="true"><use href="#i-clipboard"/></svg>Evidências prontas para auditoria.</li>
+        <li class="proof__metric"><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg>Visibilidade contínua da postura de segurança.</li>
+      </ul>
+
+      <!-- [ESPAÇO RESERVADO] Logos de clientes e parceiros. Substituir só com autorização por escrito e de uso de marca. -->
+      <div class="marquee" id="marquee" aria-label="Espaço reservado para logos de clientes e parceiros" role="region">
+        <div class="marquee__track">
+          <ul class="marquee__group" role="list">
+            <li class="logo-slot">Logo de cliente</li><li class="logo-slot">Logo de parceiro</li><li class="logo-slot">Logo de cliente</li><li class="logo-slot">Logo de parceiro</li><li class="logo-slot">Logo de cliente</li><li class="logo-slot">Logo de parceiro</li><li class="logo-slot">Logo de cliente</li>
+          </ul>
+          <ul class="marquee__group" role="list" aria-hidden="true">
+            <li class="logo-slot">Logo de cliente</li><li class="logo-slot">Logo de parceiro</li><li class="logo-slot">Logo de cliente</li><li class="logo-slot">Logo de parceiro</li><li class="logo-slot">Logo de cliente</li><li class="logo-slot">Logo de parceiro</li><li class="logo-slot">Logo de cliente</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- [ESPAÇO RESERVADO] Depoimentos. Substituir só com autorização por escrito e de uso de marca. -->
+      <div class="carousel" id="carousel" role="region" aria-roledescription="carrossel" aria-label="Depoimentos (espaço reservado)">
+        <div class="carousel__viewport">
+          <div class="carousel__track">
+            <figure class="slide" role="group" aria-roledescription="slide" aria-label="1 de 3">
+              <blockquote>[Depoimento de cliente: como a priorização mudou a rotina do time]</blockquote>
+              <figcaption><span class="avatar" aria-hidden="true"></span><div><strong>[Nome]</strong><span>[Cargo] · [Empresa]</span></div></figcaption>
+            </figure>
+            <figure class="slide" role="group" aria-roledescription="slide" aria-label="2 de 3">
+              <blockquote>[Depoimento de cliente: o que a trilha de auditoria resolveu na conversa com a auditoria interna]</blockquote>
+              <figcaption><span class="avatar" aria-hidden="true"></span><div><strong>[Nome]</strong><span>[Cargo] · [Empresa]</span></div></figcaption>
+            </figure>
+            <figure class="slide" role="group" aria-roledescription="slide" aria-label="3 de 3">
+              <blockquote>[Depoimento de cliente: como o Validate comprovou a cobertura de detecção do SIEM]</blockquote>
+              <figcaption><span class="avatar" aria-hidden="true"></span><div><strong>[Nome]</strong><span>[Cargo] · [Empresa]</span></div></figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="carousel__nav">
+          <button class="carousel__arrow" type="button" data-dir="-1" aria-label="Depoimento anterior"><svg class="ic" aria-hidden="true"><use href="#i-chevron-left"/></svg></button>
+          <div class="dots" role="group" aria-label="Escolher depoimento">
+            <button class="dot" type="button" aria-label="Depoimento 1" aria-current="true"></button>
+            <button class="dot" type="button" aria-label="Depoimento 2"></button>
+            <button class="dot" type="button" aria-label="Depoimento 3"></button>
+          </div>
+          <button class="carousel__arrow" type="button" data-dir="1" aria-label="Próximo depoimento"><svg class="ic" aria-hidden="true"><use href="#i-chevron-right"/></svg></button>
+        </div>
+        <p class="sr-only" aria-live="polite" id="carousel-live"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PREÇOS -->
+  <section class="section" id="precos" aria-labelledby="precos-title">
+    <div class="container">
+      <div class="section-head section-head--center" data-reveal>
+        <p class="eyebrow">Preços</p>
+        <h2 class="h2" id="precos-title">Planos para cada estágio de maturidade.</h2>
+        <p class="lead">Os controles de segurança estão em todos os planos. O que muda é a profundidade da análise, a escala e o suporte.</p>
+      </div>
+      <div class="billing" data-reveal>
+        <div class="seg" role="radiogroup" aria-label="Período de cobrança" id="billing" data-seg>
+          <button class="seg__opt" type="button" role="radio" aria-checked="true" tabindex="0" data-value="monthly">Mensal</button>
+          <button class="seg__opt" type="button" role="radio" aria-checked="false" tabindex="-1" data-value="annual">Anual</button>
+        </div>
+      </div>
+      <div class="plans">
+        <article class="card card--hover plan" data-reveal>
+          <h3 class="plan__name">Community</h3>
+          <p class="plan__for">Para estudo, laboratório e pequenas equipes.</p>
+          <p class="plan__price">Gratuito</p>
+          <p class="plan__billing">Download gratuito</p>
+          <ul class="checklist">
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Descoberta de portas TCP e identificação de serviços</li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Para que serve cada serviço, em português</li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Alerta básico de exposição</li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Linha de comando, com saída em tabela, JSON e HTML</li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Até 10 varreduras por mês</li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Escopo, autorização, trilha de auditoria e cifragem completos</li>
+          </ul>
+          <button class="btn btn--secondary btn--block" type="button" data-modal-open="modal-download">Baixar gratuitamente</button>
+        </article>
+        <article class="card card--hover plan plan--featured" data-reveal>
+          <span class="plan__flag">Recomendado</span>
+          <h3 class="plan__name">Business</h3>
+          <p class="plan__for">Para empresas que precisam de escala, integrações e suporte.</p>
+          <p class="plan__price">Sob consulta</p>
+          <p class="plan__billing fade-swap" data-billing>Cobrança mensal</p>
+          <ul class="checklist">
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Tudo do Community, sem limite de varreduras</li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Hesde Audit completo</li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Vulnerabilidades com <button type="button" class="term" data-term="EPSS">EPSS</button> e <button type="button" class="term" data-term="KEV">KEV</button> e priorização contextual</span></li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Aplicativo desktop</li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Relatórios executivos e técnicos em PDF, SARIF e CSV</li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Histórico e comparação entre sessões</li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Integrações com SIEM, ticketing e DefectDojo</li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Suporte em horário comercial</li>
+          </ul>
+          <a class="btn btn--primary btn--block" href="#contato" data-demo>Solicitar demonstração</a>
+        </article>
+        <article class="card card--hover plan" data-reveal>
+          <h3 class="plan__name">Enterprise</h3>
+          <p class="plan__for">Para operações corporativas com requisitos avançados.</p>
+          <p class="plan__price">Sob consulta</p>
+          <p class="plan__billing fade-swap" data-billing>Cobrança mensal</p>
+          <ul class="checklist">
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Tudo do Business</li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Hesde Validate e Purple Team, com aprovação por segundo operador</li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Servidor central multiusuário, com <button type="button" class="term" data-term="SSO">SSO</button> e <button type="button" class="term" data-term="RBAC">RBAC</button></span></li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Mapeamento de conformidade (ISO/IEC 27001, CIS Controls, LGPD)</li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Integrações avançadas com SOAR e GRC</li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Suporte dedicado e revisão de código sob NDA</li>
+          </ul>
+          <a class="btn btn--secondary btn--block" href="#contato" data-demo data-interest="Falar com a equipe">Fale com vendas</a>
+        </article>
+      </div>
+
+      <div class="cmp">
+        <button class="btn btn--secondary cmp__btn" type="button" aria-expanded="false" aria-controls="cmp-table">Comparar todos os recursos <svg class="ic ic--16" aria-hidden="true"><use href="#i-chevron-down"/></svg></button>
+        <div class="expand" id="cmp-table">
+          <div>
+            <div class="cmp__wrap" tabindex="0" role="region" aria-label="Comparação de recursos por plano">
+              <table>
+                <caption class="sr-only">Recursos incluídos em cada plano</caption>
+                <thead><tr><th scope="col">Recurso</th><th scope="col">Community</th><th scope="col">Business</th><th scope="col">Enterprise</th></tr></thead>
+                <tbody>
+                  <tr><th scope="row">Escopo, autorização e trilha de auditoria</th><td class="yes">✓<span class="sr-only">Incluído</span></td><td class="yes">✓<span class="sr-only">Incluído</span></td><td class="yes">✓<span class="sr-only">Incluído</span></td></tr>
+                  <tr><th scope="row">Cifragem por cliente e mascaramento de segredos</th><td class="yes">✓<span class="sr-only">Incluído</span></td><td class="yes">✓<span class="sr-only">Incluído</span></td><td class="yes">✓<span class="sr-only">Incluído</span></td></tr>
+                  <tr><th scope="row">Descoberta de portas e serviços</th><td class="yes">✓<span class="sr-only">Incluído</span></td><td class="yes">✓<span class="sr-only">Incluído</span></td><td class="yes">✓<span class="sr-only">Incluído</span></td></tr>
+                  <tr><th scope="row">Limite de varreduras</th><td>10 por mês</td><td>Sem limite</td><td>Sem limite</td></tr>
+                  <tr><th scope="row">Auditoria de hardening e configurações</th><td class="no">—<span class="sr-only">Não incluído</span></td><td class="yes">✓<span class="sr-only">Incluído</span></td><td class="yes">✓<span class="sr-only">Incluído</span></td></tr>
+                  <tr><th scope="row">Vulnerabilidades com EPSS e KEV</th><td class="no">—<span class="sr-only">Não incluído</span></td><td class="yes">✓<span class="sr-only">Incluído</span></td><td class="yes">✓<span class="sr-only">Incluído</span></td></tr>
+                  <tr><th scope="row">Aplicativo desktop</th><td class="no">—<span class="sr-only">Não incluído</span></td><td class="yes">✓<span class="sr-only">Incluído</span></td><td class="yes">✓<span class="sr-only">Incluído</span></td></tr>
+                  <tr><th scope="row">Relatórios executivos em PDF</th><td class="no">—<span class="sr-only">Não incluído</span></td><td class="yes">✓<span class="sr-only">Incluído</span></td><td class="yes">✓<span class="sr-only">Incluído</span></td></tr>
+                  <tr><th scope="row">Integrações com SIEM e ticketing</th><td class="no">—<span class="sr-only">Não incluído</span></td><td class="yes">✓<span class="sr-only">Incluído</span></td><td class="yes">✓<span class="sr-only">Incluído</span></td></tr>
+                  <tr><th scope="row">Validate e Purple Team</th><td class="no">—<span class="sr-only">Não incluído</span></td><td class="no">—<span class="sr-only">Não incluído</span></td><td class="yes">✓<span class="sr-only">Incluído</span></td></tr>
+                  <tr><th scope="row">Servidor central, SSO e RBAC</th><td class="no">—<span class="sr-only">Não incluído</span></td><td class="no">—<span class="sr-only">Não incluído</span></td><td class="yes">✓<span class="sr-only">Incluído</span></td></tr>
+                  <tr><th scope="row">Suporte dedicado</th><td class="no">—<span class="sr-only">Não incluído</span></td><td class="no">—<span class="sr-only">Não incluído</span></td><td class="yes">✓<span class="sr-only">Incluído</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section section--alt" id="faq" aria-labelledby="faq-title">
+    <div class="container faq">
+      <div class="faq__aside" data-reveal>
+        <p class="eyebrow">Perguntas frequentes</p>
+        <h2 class="h2" id="faq-title">O que as equipes perguntam antes de começar.</h2>
+      </div>
+      <div class="acc" id="faq-acc" data-reveal>
+        <div class="acc__item">
+          <h3><button class="acc__btn" type="button" id="faq-b1" aria-expanded="false" aria-controls="faq-p1">O Hesde explora vulnerabilidades?<svg class="ic acc__chev" aria-hidden="true"><use href="#i-chevron-down"/></svg></button></h3>
+          <div class="acc__panel" id="faq-p1" role="region" aria-labelledby="faq-b1"><div class="acc__inner"><p>Não. O Audit é somente leitura por padrão. O Validate confirma riscos com ações seguras de um catálogo fechado, como login com conta de teste ou evento benigno detectável. Não há exploração destrutiva, negação de serviço nem alteração de dados.</p></div></div>
+        </div>
+        <div class="acc__item">
+          <h3><button class="acc__btn" type="button" id="faq-b2" aria-expanded="false" aria-controls="faq-p2">O Hesde altera configurações dos sistemas?<svg class="ic acc__chev" aria-hidden="true"><use href="#i-chevron-down"/></svg></button></h3>
+          <div class="acc__panel" id="faq-p2" role="region" aria-labelledby="faq-b2"><div class="acc__inner"><p>Não. O Hesde recomenda a correção e acompanha se ela foi feita. Os únicos arquivos que ele remove são os temporários que ele mesmo criou e registrou.</p></div></div>
+        </div>
+        <div class="acc__item">
+          <h3><button class="acc__btn" type="button" id="faq-b3" aria-expanded="false" aria-controls="faq-p3">Como funciona a autorização para validações?<svg class="ic acc__chev" aria-hidden="true"><use href="#i-chevron-down"/></svg></button></h3>
+          <div class="acc__panel" id="faq-p3" role="region" aria-labelledby="faq-b3"><div class="acc__inner"><p>O cliente aprova uma versão do escopo e uma autorização formal, com vigência, janelas de teste, ambientes e nível máximo (<button type="button" class="term" data-term="N0–N3">N0–N3</button>). Cada validação passa pelo motor de política e exige aprovação humana por execução. Fora do laboratório, quem aprova não pode executar.</p></div></div>
+        </div>
+        <div class="acc__item">
+          <h3><button class="acc__btn" type="button" id="faq-b4" aria-expanded="false" aria-controls="faq-p4">Quais ambientes são suportados?<svg class="ic acc__chev" aria-hidden="true"><use href="#i-chevron-down"/></svg></button></h3>
+          <div class="acc__panel" id="faq-p4" role="region" aria-labelledby="faq-b4"><div class="acc__inner"><p>Linux, Windows e Active Directory, nuvem com acesso somente leitura, containers, Kubernetes, aplicações web e repositórios de código. A coleta pode ser portátil no próprio host, remota com credencial, remota sem credencial ou a partir de uma imagem offline.</p></div></div>
+        </div>
+        <div class="acc__item">
+          <h3><button class="acc__btn" type="button" id="faq-b5" aria-expanded="false" aria-controls="faq-p5">O Hesde integra com SIEM e SOAR?<svg class="ic acc__chev" aria-hidden="true"><use href="#i-chevron-down"/></svg></button></h3>
+          <div class="acc__panel" id="faq-p5" role="region" aria-labelledby="faq-b5"><div class="acc__inner"><p>Sim. Envia eventos e achados para o SIEM, dispara playbooks no SOAR por webhooks assinados e consulta o SIEM e o EDR para confirmar se uma validação foi detectada.</p></div></div>
+        </div>
+        <div class="acc__item">
+          <h3><button class="acc__btn" type="button" id="faq-b6" aria-expanded="false" aria-controls="faq-p6">Como são tratados segredos e dados sensíveis?<svg class="ic acc__chev" aria-hidden="true"><use href="#i-chevron-down"/></svg></button></h3>
+          <div class="acc__panel" id="faq-p6" role="region" aria-labelledby="faq-b6"><div class="acc__inner"><p>Segredos encontrados são mascarados antes de qualquer gravação, e material de credencial do alvo nunca é extraído. Os dados de cada cliente ficam cifrados com chave própria, guardada no cofre do sistema operacional, e podem ser destruídos de forma irrecuperável ao fim do contrato, apoiando o atendimento à LGPD.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTATO -->
+  <section class="section" id="contato" aria-labelledby="contato-title">
+    <div class="container contact">
+      <div data-reveal>
+        <p class="eyebrow">Contato</p>
+        <h2 class="h2" id="contato-title">Solicite uma demonstração.</h2>
+        <p class="lead" style="margin-top:20px">Mostramos o Hesde em um laboratório com dados fictícios e conversamos sobre o seu escopo, seus controles e suas prioridades.</p>
+        <ul class="checklist checklist--brand">
+          <li><svg class="ic" aria-hidden="true"><use href="#i-mail"/></svg>Retornamos pelo e-mail informado</li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-monitor"/></svg>Demonstração guiada, sem acesso ao seu ambiente</li>
+          <li><svg class="ic" aria-hidden="true"><use href="#i-file"/></svg>Proposta alinhada ao escopo e ao nível de atividade</li>
+        </ul>
+      </div>
+      <div class="card form-card" data-reveal>
+        <form class="form" id="contact-form" novalidate aria-describedby="form-note">
+          <div class="field span-2">
+            <input class="field__input" id="f-name" name="name" type="text" placeholder=" " autocomplete="name" required aria-describedby="f-name-msg">
+            <label class="field__label" for="f-name">Nome completo</label>
+            <svg class="ic field__mark" aria-hidden="true"><use href="#i-check"/></svg>
+            <p class="field__msg" id="f-name-msg"><svg class="ic" aria-hidden="true"><use href="#i-sev-crit"/></svg><span></span></p>
+          </div>
+          <div class="field">
+            <input class="field__input" id="f-email" name="email" type="email" placeholder=" " autocomplete="email" inputmode="email" required aria-describedby="f-email-msg">
+            <label class="field__label" for="f-email">E-mail corporativo</label>
+            <svg class="ic field__mark" aria-hidden="true"><use href="#i-check"/></svg>
+            <p class="field__msg" id="f-email-msg"><svg class="ic" aria-hidden="true"><use href="#i-sev-crit"/></svg><span></span></p>
+          </div>
+          <div class="field">
+            <input class="field__input" id="f-company" name="company" type="text" placeholder=" " autocomplete="organization" required aria-describedby="f-company-msg">
+            <label class="field__label" for="f-company">Empresa</label>
+            <svg class="ic field__mark" aria-hidden="true"><use href="#i-check"/></svg>
+            <p class="field__msg" id="f-company-msg"><svg class="ic" aria-hidden="true"><use href="#i-sev-crit"/></svg><span></span></p>
+          </div>
+          <div class="field field--select">
+            <select class="field__input" id="f-area" name="area" required aria-describedby="f-area-msg">
+              <option value="">Selecione</option>
+              <option>Times de segurança e SOC</option>
+              <option>Auditoria interna e GRC</option>
+              <option>Infraestrutura e operações</option>
+              <option>Technology Risk</option>
+              <option>Desenvolvimento e AppSec</option>
+              <option>Gestores de TI e C-level</option>
+            </select>
+            <label class="field__label" for="f-area">Área</label>
+            <p class="field__msg" id="f-area-msg"><svg class="ic" aria-hidden="true"><use href="#i-sev-crit"/></svg><span></span></p>
+          </div>
+          <div class="field field--select">
+            <select class="field__input" id="f-size" name="size" required aria-describedby="f-size-msg">
+              <option value="">Selecione</option>
+              <option>Até 100 ativos</option>
+              <option>De 100 a 1.000 ativos</option>
+              <option>De 1.000 a 10.000 ativos</option>
+              <option>Mais de 10.000 ativos</option>
+            </select>
+            <label class="field__label" for="f-size">Tamanho do ambiente</label>
+            <p class="field__msg" id="f-size-msg"><svg class="ic" aria-hidden="true"><use href="#i-sev-crit"/></svg><span></span></p>
+          </div>
+          <div class="field span-2" id="f-interest-field">
+            <fieldset class="radio-chips" aria-describedby="f-interest-msg">
+              <legend>Interesse principal</legend>
+              <label class="radio-chip"><input type="radio" name="interest" value="Community"><span>Community</span></label>
+              <label class="radio-chip"><input type="radio" name="interest" value="Audit"><span>Audit</span></label>
+              <label class="radio-chip"><input type="radio" name="interest" value="Validate"><span>Validate</span></label>
+              <label class="radio-chip"><input type="radio" name="interest" value="Audit + Validate"><span>Audit + Validate</span></label>
+              <label class="radio-chip"><input type="radio" name="interest" value="Falar com a equipe"><span>Falar com a equipe</span></label>
+            </fieldset>
+            <p class="field__msg" id="f-interest-msg"><svg class="ic" aria-hidden="true"><use href="#i-sev-crit"/></svg><span></span></p>
+          </div>
+          <div class="field field--area has-count span-2">
+            <textarea class="field__input" id="f-message" name="message" placeholder=" " maxlength="600" rows="4" aria-describedby="f-message-count"></textarea>
+            <label class="field__label" for="f-message">Conte o seu contexto (opcional)</label>
+            <span class="field__count" id="f-message-count" aria-live="polite">0/600</span>
+          </div>
+          <div class="field span-2" id="f-consent-field">
+            <label class="check"><input type="checkbox" id="f-consent" name="consent" required aria-describedby="f-consent-msg"><span>Concordo com o uso destes dados para o contato sobre a demonstração, conforme a <a href="#politica-privacidade" data-tbd>Política de Privacidade [a definir]</a>.</span></label>
+            <p class="field__msg" id="f-consent-msg"><svg class="ic" aria-hidden="true"><use href="#i-sev-crit"/></svg><span></span></p>
+          </div>
+          <div class="alert alert--crit span-2" id="contact-error" role="alert" hidden><svg class="ic" aria-hidden="true"><use href="#i-sev-crit"/></svg><div><strong>Não foi possível enviar agora.</strong> Seus dados continuam no formulário.</div></div>
+          <div class="form__submit span-2">
+            <p class="form__note" id="form-note"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg>Protótipo: nenhum dado sai deste navegador.</p>
+            <button class="btn btn--primary btn--lg" type="submit" id="contact-submit">Solicitar demonstração</button>
+          </div>
+        </form>
+        <div class="form__done" id="contact-done" tabindex="-1" hidden>
+          <svg class="success-check" viewBox="0 0 56 56" aria-hidden="true"><circle cx="28" cy="28" r="25" pathLength="1"/><path d="M17 29l7.5 7.5L39 21" pathLength="1"/></svg>
+          <h3>Solicitação recebida.</h3>
+          <p class="lead" id="contact-protocol">Protocolo DEMO-00000. Retornamos pelo e-mail informado.</p>
+          <button class="btn btn--secondary" type="button" id="contact-again">Enviar outra solicitação</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA FINAL: único uso de Signature Red na interface -->
+  <section class="band-cta" id="cta" aria-labelledby="cta-title">
+    <div class="container">
+      <h2 class="band-cta__title" id="cta-title">Transforme exposições em decisões de segurança.</h2>
+      <div class="band-cta__ctas">
+        <a class="btn btn--lg btn--burgundy" href="#contato" data-demo>Solicitar demonstração</a>
+        <a class="btn btn--lg btn--ivory" href="#contato" data-demo data-interest="Falar com a equipe">Falar com a equipe</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- SISTEMA DE DESIGN (interno; acesso só pelo rodapé) -->
+  <section class="section" id="design-system" aria-labelledby="ds-title" hidden>
+    <div class="container">
+      <div class="ds-head">
+        <div>
+          <p class="eyebrow">Sistema de design · interno</p>
+          <h2 class="h2" id="ds-title">Fundamentos e componentes.</h2>
+        </div>
+        <a class="btn btn--secondary btn--sm" href="#inicio" id="ds-close">Voltar ao site</a>
+      </div>
+      <div class="ds">
+
+        <article class="card ds__block ds__block--wide">
+          <h3 class="h4"><span class="num">01</span>Marca</h3>
+          <div class="wm-apps">
+            <div class="wm-app wm-app--a"><span class="wordmark">HESDE</span></div>
+            <div class="wm-app wm-app--b"><span class="wordmark">HESDE</span></div>
+            <div class="wm-app wm-app--c"><span class="wordmark">HESDE</span></div>
+          </div>
+          <p class="ds__sub">Paleta</p>
+          <div class="brand-colors">
+            <div class="brand-color"><i style="background:#340C0E"></i><span>HESDE Burgundy<br><code>#340C0E</code></span></div>
+            <div class="brand-color"><i style="background:#CC383E"></i><span>Signature Red<br><code>#CC383E</code></span></div>
+            <div class="brand-color"><i style="background:#F8C6C8"></i><span>HESDE Light<br><code>#F8C6C8</code></span></div>
+            <div class="brand-color"><i style="background:#F3EFE8"></i><span>Ivory<br><code>#F3EFE8</code></span></div>
+            <div class="brand-color"><i style="background:#191718"></i><span>Charcoal<br><code>#191718</code></span></div>
+          </div>
+          <p class="ds__sub">Proporção na interface</p>
+          <div class="ratio-bar" role="img" aria-label="Proporção: 70% neutros, 20% burgundy, 5% HESDE Light, 5% Signature Red">
+            <span style="width:70%;background:#F3EFE8;color:#191718;box-shadow:inset -1px 0 0 #CFC5B7">Neutros 70%</span>
+            <span style="width:20%;background:#340C0E;color:#F8C6C8">Burgundy 20%</span>
+            <span style="width:5%;background:#F8C6C8;color:#340C0E">5%</span>
+            <span style="width:5%;background:#CC383E;color:#F3EFE8">5%</span>
+          </div>
+          <p class="ds__sub">Regras do logotipo</p>
+          <div class="logo-rules">
+            <div class="logo-rule"><div class="logo-rule__art"><span class="clearspace"><span class="wordmark">HESDE</span></span></div>Área de proteção igual à altura do "H"</div>
+            <div class="logo-rule"><div class="logo-rule__art"><span class="wordmark wm-stretch">HESDE</span><span class="logo-rule__x"></span></div>Não esticar</div>
+            <div class="logo-rule"><div class="logo-rule__art"><span class="wordmark wm-shadow">HESDE</span><span class="logo-rule__x"></span></div>Não aplicar sombra nem efeito</div>
+          </div>
+        </article>
+
+        <article class="card ds__block">
+          <h3 class="h4"><span class="num">02</span>Cores da interface</h3>
+          <p class="small muted">Valores do tema claro e do escuro. O contraste ao lado de cada par é medido agora, no tema ativo.</p>
+          <p class="ds__sub">Neutros e primária · claro / escuro</p>
+          <div class="swatches">
+            <div class="swatch"><i style="background:linear-gradient(90deg,#F3EFE8 50%,#191718 50%)"></i><span>--bg</span></div>
+            <div class="swatch"><i style="background:linear-gradient(90deg,#ECE6DC 50%,#1E1B1C 50%)"></i><span>--bg-alt</span></div>
+            <div class="swatch"><i style="background:linear-gradient(90deg,#FBF9F5 50%,#221E1F 50%)"></i><span>--surface</span></div>
+            <div class="swatch"><i style="background:linear-gradient(90deg,#191718 50%,#F3EFE8 50%)"></i><span>--ink</span></div>
+            <div class="swatch"><i style="background:linear-gradient(90deg,#6B6163 50%,#A99D98 50%)"></i><span>--muted</span></div>
+            <div class="swatch"><i style="background:linear-gradient(90deg,#E2DBD0 50%,#342D2E 50%)"></i><span>--line</span></div>
+            <div class="swatch"><i style="background:linear-gradient(90deg,#340C0E 50%,#F8C6C8 50%)"></i><span>--primary</span></div>
+            <div class="swatch"><i style="background:linear-gradient(90deg,#340C0E 50%,#2A0A0C 50%)"></i><span>--band-security-bg</span></div>
+            <div class="swatch"><i style="background:linear-gradient(90deg,#191718 50%,#131112 50%)"></i><span>--footer-bg</span></div>
+          </div>
+          <p class="ds__sub">Contraste medido</p>
+          <div class="pairs" id="ds-pairs">
+            <div class="pair" data-fg="--ink" data-bg="--bg">Texto principal sobre fundo</div>
+            <div class="pair" data-fg="--ink-2" data-bg="--bg">Texto secundário sobre fundo</div>
+            <div class="pair" data-fg="--muted" data-bg="--bg">Legenda sobre fundo</div>
+            <div class="pair" data-fg="--muted" data-bg="--bg-alt">Legenda sobre seção alternada</div>
+            <div class="pair" data-fg="--muted" data-bg="--surface">Legenda sobre card</div>
+            <div class="pair" data-fg="--primary" data-bg="--bg">Primária (rótulos, links) sobre fundo</div>
+            <div class="pair" data-fg="--primary" data-bg="--bg-alt">Primária sobre seção alternada</div>
+            <div class="pair" data-fg="--primary-ink" data-bg="--primary">Texto sobre botão primário</div>
+            <div class="pair" data-fg="--band-security-ink" data-bg="--band-security-bg">Faixa Segurança · texto</div>
+            <div class="pair" data-fg="--band-security-muted" data-bg="--band-security-bg">Faixa Segurança · secundário</div>
+            <div class="pair" data-fg="--footer-ink" data-bg="--footer-bg">Rodapé · texto</div>
+            <div class="pair" data-fg="--footer-muted" data-bg="--footer-bg">Rodapé · secundário</div>
+            <div class="pair" data-fg="--band-cta-ink" data-bg="--band-cta-bg" data-large>CTA · título (texto grande)</div>
+          </div>
+        </article>
+
+        <article class="card ds__block">
+          <h3 class="h4"><span class="num">03</span>Estados de risco</h3>
+          <div class="chips">
+            <span class="badge badge--crit"><svg class="ic" aria-hidden="true"><use href="#i-sev-crit"/></svg>Crítico</span>
+            <span class="badge badge--high"><svg class="ic" aria-hidden="true"><use href="#i-sev-high"/></svg>Alto</span>
+            <span class="badge badge--mid"><svg class="ic" aria-hidden="true"><use href="#i-sev-mid"/></svg>Médio</span>
+            <span class="badge badge--low"><svg class="ic" aria-hidden="true"><use href="#i-sev-low"/></svg>Baixo</span>
+            <span class="badge badge--info"><svg class="ic" aria-hidden="true"><use href="#i-sev-info"/></svg>Informativo</span>
+            <span class="badge badge--ok"><svg class="ic" aria-hidden="true"><use href="#i-sev-ok"/></svg>Conforme</span>
+          </div>
+          <p class="ds__sub">Cores de gráfico</p>
+          <div class="legend"><span><i class="seg-crit"></i>--crit-chart</span><span><i class="seg-high"></i>--high-chart</span><span><i class="seg-mid"></i>--mid-chart</span><span><i class="seg-low"></i>--low-chart</span><span><i class="seg-ok"></i>--ok-chart</span></div>
+          <p class="ds__sub">Contraste dos badges</p>
+          <div class="pairs">
+            <div class="pair" data-fg="--crit" data-bg="--crit-soft">Crítico</div>
+            <div class="pair" data-fg="--high" data-bg="--high-soft">Alto</div>
+            <div class="pair" data-fg="--mid" data-bg="--mid-soft">Médio</div>
+            <div class="pair" data-fg="--low" data-bg="--low-soft">Baixo</div>
+            <div class="pair" data-fg="--info" data-bg="--info-soft">Informativo</div>
+            <div class="pair" data-fg="--ok" data-bg="--ok-soft">Conforme</div>
+          </div>
+        </article>
+
+        <article class="card ds__block ds__block--wide">
+          <h3 class="h4"><span class="num">04</span>Tipografia</h3>
+          <div class="type-row"><code>--t-display · Bodoni 500</code><span class="display" style="font-size:clamp(2rem,1.4rem + 2vw,3rem)">Exposição com contexto</span></div>
+          <div class="type-row"><code>--t-h2 · Bodoni 500</code><span class="h2">Títulos de seção</span></div>
+          <div class="type-row"><code>--t-numeral</code><span class="numeral">01 02 03</span></div>
+          <div class="type-row"><code>--t-h3 · Geist 600</code><span class="h3">Título de card</span></div>
+          <div class="type-row"><code>--t-h4 · Geist 600</code><span class="h4">Subtítulo de painel</span></div>
+          <div class="type-row"><code>--t-lead · Geist 400</code><span class="lead">Subtítulo de seção, até 60 caracteres por linha.</span></div>
+          <div class="type-row"><code>--t-body · Geist 400</code><span>Texto corrido com altura de linha de 1,65.</span></div>
+          <div class="type-row"><code>--t-ui · Geist 500</code><span style="font:500 var(--t-ui)/1.4 var(--font-sans)">Botões, abas e tabelas</span></div>
+          <div class="type-row"><code>--t-small · Geist 400</code><span class="small">Notas e legendas</span></div>
+          <div class="type-row"><code>--t-eyebrow · Geist 600</code><span class="eyebrow" style="margin:0">Rótulo de seção</span></div>
+          <div class="type-row"><code>--t-mono · Geist Mono</code><span class="mono">policy.decision · target.in_scope · sha256:9c1e…4b07</span></div>
+        </article>
+
+        <article class="card ds__block">
+          <h3 class="h4"><span class="num">05</span>Espaçamento e grade</h3>
+          <div class="space-list">
+            <div class="space-row"><i style="width:4px"></i>4</div><div class="space-row"><i style="width:8px"></i>8</div><div class="space-row"><i style="width:12px"></i>12</div><div class="space-row"><i style="width:16px"></i>16</div><div class="space-row"><i style="width:24px"></i>24</div><div class="space-row"><i style="width:32px"></i>32</div><div class="space-row"><i style="width:48px"></i>48</div><div class="space-row"><i style="width:64px"></i>64</div><div class="space-row"><i style="width:96px"></i>96</div><div class="space-row"><i style="width:128px"></i>128</div>
+          </div>
+          <button class="switch" type="button" role="switch" aria-checked="false" id="ds-grid"><span class="switch__track" aria-hidden="true"></span><span>Mostrar grade</span></button>
+          <p class="note" style="margin-top:8px">12 colunas, gutter de 24 px, contêiner de até 1.200 px.</p>
+        </article>
+
+        <article class="card ds__block">
+          <h3 class="h4"><span class="num">06</span>Raios, sombras e movimento</h3>
+          <div class="samples">
+            <div class="sample-box" style="border-radius:4px">raio 4</div>
+            <div class="sample-box" style="border-radius:8px">raio 8</div>
+            <div class="sample-box" style="border-radius:12px">raio 12</div>
+            <div class="sample-box" style="border-radius:999px">999</div>
+          </div>
+          <div class="samples" style="margin-top:12px">
+            <div class="sample-box" style="box-shadow:var(--shadow-1)">sombra 1</div>
+            <div class="sample-box" style="box-shadow:var(--shadow-2)">sombra 2</div>
+            <div class="sample-box" style="box-shadow:var(--shadow-3)">sombra 3</div>
+          </div>
+          <div class="motion-demo" id="ds-motion">
+            <div><span>--dur-fast 120</span><i style="transition-duration:120ms"></i></div>
+            <div><span>--dur 220</span><i style="transition-duration:220ms"></i></div>
+            <div><span>--dur-slow 360</span><i style="transition-duration:360ms"></i></div>
+          </div>
+          <button class="btn btn--secondary btn--sm" type="button" id="ds-motion-btn" style="margin-top:12px">Reproduzir durações</button>
+        </article>
+
+        <article class="card ds__block">
+          <h3 class="h4"><span class="num">07</span>Botões</h3>
+          <div class="row">
+            <button class="btn btn--primary btn--sm" type="button">Primário sm</button>
+            <button class="btn btn--primary" type="button">Primário md</button>
+            <button class="btn btn--primary btn--lg" type="button">Primário lg</button>
+          </div>
+          <div class="row" style="margin-top:12px">
+            <button class="btn btn--primary is-hover" type="button" tabindex="-1">Hover</button>
+            <button class="btn btn--primary is-focus" type="button" tabindex="-1">Foco</button>
+            <button class="btn btn--primary is-loading" type="button" aria-busy="true" tabindex="-1">Carregando</button>
+            <button class="btn btn--primary" type="button" disabled>Desativado</button>
+          </div>
+          <div class="row" style="margin-top:12px">
+            <button class="btn btn--secondary" type="button">Secundário</button>
+            <button class="btn btn--secondary is-hover" type="button" tabindex="-1">Hover</button>
+            <button class="btn btn--secondary" type="button" disabled>Desativado</button>
+            <button class="btn btn--ghost" type="button"><span>Discreto</span></button>
+          </div>
+          <div class="row" style="margin-top:12px">
+            <button class="btn btn--primary" type="button" id="ds-load-btn">Testar carregamento</button>
+          </div>
+        </article>
+
+        <article class="card ds__block">
+          <h3 class="h4"><span class="num">08</span>Campos</h3>
+          <div class="stack-16">
+            <div class="field"><input class="field__input" id="ds-f1" placeholder=" "><label class="field__label" for="ds-f1">Padrão</label></div>
+            <div class="field is-invalid"><input class="field__input" id="ds-f2" placeholder=" " value="nome@gmail.com" aria-invalid="true" aria-describedby="ds-f2-msg"><label class="field__label" for="ds-f2">Erro</label><p class="field__msg" id="ds-f2-msg"><svg class="ic" aria-hidden="true"><use href="#i-sev-crit"/></svg><span>Use o e-mail da empresa, não um e-mail pessoal.</span></p></div>
+            <div class="field is-valid"><input class="field__input" id="ds-f3" placeholder=" " value="Empresa Exemplo S.A."><label class="field__label" for="ds-f3">Válido</label><svg class="ic field__mark" aria-hidden="true"><use href="#i-check"/></svg></div>
+            <div class="field"><input class="field__input" id="ds-f4" placeholder=" " value="Somente leitura" disabled><label class="field__label" for="ds-f4">Desativado</label></div>
+            <div class="field field--select"><select class="field__input" id="ds-f5"><option>Produção</option><option>Homologação</option></select><label class="field__label" for="ds-f5">Select</label></div>
+            <div class="field field--area has-count"><textarea class="field__input" id="ds-f6" placeholder=" " maxlength="600" data-counter="ds-f6-count"></textarea><label class="field__label" for="ds-f6">Textarea</label><span class="field__count" id="ds-f6-count">0/600</span></div>
+            <button class="switch" type="button" role="switch" aria-checked="true" data-switch><span class="switch__track" aria-hidden="true"></span><span>Switch</span></button>
+            <label class="check"><input type="checkbox" checked><span>Checkbox</span></label>
+            <fieldset class="radio-chips"><legend>Radio-chips</legend><label class="radio-chip"><input type="radio" name="ds-rc" checked><span>Audit</span></label><label class="radio-chip"><input type="radio" name="ds-rc"><span>Validate</span></label></fieldset>
+          </div>
+        </article>
+
+        <article class="card ds__block">
+          <h3 class="h4"><span class="num">09</span>Badges, chips e tags</h3>
+          <div class="chips">
+            <span class="chip">Neutro</span>
+            <span class="chip chip--brand">Marca</span>
+            <button class="chip chip--filter" type="button" aria-pressed="true" data-toggle-press>Filtro ativo</button>
+            <button class="chip chip--filter" type="button" aria-pressed="false" data-toggle-press>Filtro</button>
+          </div>
+          <p class="ds__sub">Códigos de motivo</p>
+          <div class="chips">
+            <span class="reason reason--ok">target.in_scope</span>
+            <span class="reason reason--mid"><svg class="ic" aria-hidden="true"><use href="#i-user-check"/></svg>approval.required</span>
+            <span class="reason reason--crit"><svg class="ic" aria-hidden="true"><use href="#i-ban"/></svg>target.excluded</span>
+          </div>
+        </article>
+
+        <article class="card ds__block">
+          <h3 class="h4"><span class="num">10</span>Tabela</h3>
+          <div class="table-wrap">
+            <table class="table">
+              <thead><tr><th scope="col">Ativo</th><th scope="col">Achados</th><th scope="col">Risco</th></tr></thead>
+              <tbody>
+                <tr><td><span class="cell-title">dc-01.empresa.example</span><span class="cell-sub">198.51.100.5</span></td><td class="td-num">2</td><td><span class="badge badge--crit"><svg class="ic" aria-hidden="true"><use href="#i-sev-crit"/></svg>Crítico</span></td></tr>
+                <tr class="is-selected"><td><span class="cell-title">portal.empresa.example</span><span class="cell-sub">192.0.2.80</span></td><td class="td-num">2</td><td><span class="badge badge--mid"><svg class="ic" aria-hidden="true"><use href="#i-sev-mid"/></svg>Médio</span></td></tr>
+                <tr><td><span class="cell-title">lab-validate-01</span><span class="cell-sub">203.0.113.20</span></td><td class="td-num">0</td><td><span class="badge badge--ok"><svg class="ic" aria-hidden="true"><use href="#i-sev-ok"/></svg>Conforme</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+
+        <article class="card ds__block">
+          <h3 class="h4"><span class="num">11</span>Abas e segmentado</h3>
+          <div class="tabs" role="tablist" aria-label="Exemplo de abas" id="ds-tabs">
+            <button class="tab" type="button" role="tab" id="ds-tab-1" aria-controls="ds-panel-1" aria-selected="true" tabindex="0">Visão geral</button>
+            <button class="tab" type="button" role="tab" id="ds-tab-2" aria-controls="ds-panel-2" aria-selected="false" tabindex="-1">Achados</button>
+            <button class="tab" type="button" role="tab" id="ds-tab-3" aria-controls="ds-panel-3" aria-selected="false" tabindex="-1">Evidências</button>
+            <span class="tabs__ink" aria-hidden="true"></span>
+          </div>
+          <div class="tabpanel" role="tabpanel" id="ds-panel-1" aria-labelledby="ds-tab-1" tabindex="0" style="padding:16px 0">Painel 1: setas, Home e End trocam a aba.</div>
+          <div class="tabpanel" role="tabpanel" id="ds-panel-2" aria-labelledby="ds-tab-2" tabindex="0" style="padding:16px 0" hidden>Painel 2: o indicador desliza sob a aba ativa.</div>
+          <div class="tabpanel" role="tabpanel" id="ds-panel-3" aria-labelledby="ds-tab-3" tabindex="0" style="padding:16px 0" hidden>Painel 3: o painel entra com fade e deslocamento de 8 px.</div>
+          <div class="seg" role="radiogroup" aria-label="Exemplo de segmentado" data-seg>
+            <button class="seg__opt" type="button" role="radio" aria-checked="true" tabindex="0">Dia</button>
+            <button class="seg__opt" type="button" role="radio" aria-checked="false" tabindex="-1">Semana</button>
+            <button class="seg__opt" type="button" role="radio" aria-checked="false" tabindex="-1">Mês</button>
+          </div>
+        </article>
+
+        <article class="card ds__block">
+          <h3 class="h4"><span class="num">12</span>Modal, toasts e tooltip</h3>
+          <div class="row">
+            <button class="btn btn--secondary btn--sm" type="button" data-modal-open="modal-docs">Abrir modal</button>
+            <button class="btn btn--secondary btn--sm" type="button" data-toast="info">Toast de informação</button>
+            <button class="btn btn--secondary btn--sm" type="button" data-toast="ok">Toast de sucesso</button>
+            <button class="btn btn--secondary btn--sm" type="button" data-toast="crit">Toast de erro</button>
+          </div>
+          <p style="margin-top:16px">Tooltip de glossário: <button type="button" class="term" data-term="RBAC">RBAC</button>, <button type="button" class="term" data-term="SSO">SSO</button> e <button type="button" class="term" data-term="SBOM">SBOM</button>.</p>
+        </article>
+
+        <article class="card ds__block">
+          <h3 class="h4"><span class="num">13</span>Estados</h3>
+          <div class="stack-16">
+            <div class="box" aria-label="Carregando" style="display:grid;gap:10px"><div class="skel" style="width:60%"></div><div class="skel" style="width:90%"></div><div class="skel" style="width:75%"></div></div>
+            <div class="box empty"><svg class="ic" aria-hidden="true"><use href="#i-search"/></svg><p class="h4">Nada por aqui</p><p>Estado vazio, com título, texto e ação.</p><button class="btn btn--secondary btn--sm" type="button">Ação</button></div>
+            <div class="alert alert--crit"><svg class="ic" aria-hidden="true"><use href="#i-sev-crit"/></svg><div><strong>Falha ao carregar.</strong> A simulação não respondeu.<br><button class="btn btn--secondary btn--sm" type="button">Tentar de novo</button></div></div>
+            <div class="row"><svg class="success-check" id="ds-check" viewBox="0 0 56 56" aria-hidden="true"><circle cx="28" cy="28" r="25" pathLength="1"/><path d="M17 29l7.5 7.5L39 21" pathLength="1"/></svg><button class="btn btn--secondary btn--sm" type="button" id="ds-check-btn">Redesenhar sucesso</button></div>
+            <button class="switch" type="button" role="switch" aria-checked="false" id="ds-fail"><span class="switch__track" aria-hidden="true"></span><span>Simular falha no envio do formulário de contato</span></button>
+          </div>
+        </article>
+
+        <article class="card ds__block" id="ds-charts">
+          <h3 class="h4"><span class="num">14</span>Gráficos</h3>
+          <div class="stack" aria-hidden="true"><div class="stack__fill"><span class="stack__seg seg-crit" style="width:12%"></span><span class="stack__seg seg-high" style="width:24%"></span><span class="stack__seg seg-mid" style="width:34%"></span><span class="stack__seg seg-low" style="width:30%"></span></div></div>
+          <p class="sr-only">Barra empilhada: crítico 12%, alto 24%, médio 34%, baixo 30%.</p>
+          <svg class="spark" viewBox="0 0 300 48" preserveAspectRatio="none" aria-hidden="true" style="margin-top:16px"><path class="spark__area" d="M0 8 L50 14 L100 12 L150 22 L200 26 L250 34 L300 38 V48 H0Z"/><path class="spark__line" pathLength="1" vector-effect="non-scaling-stroke" d="M0 8 L50 14 L100 12 L150 22 L200 26 L250 34 L300 38"/></svg>
+          <p class="sr-only">Sparkline: tendência de queda.</p>
+          <div class="row" style="margin-top:16px;align-items:flex-end;gap:24px">
+            <div class="bars" style="width:180px" aria-hidden="true"><span class="bars__bar" style="--v:.4"></span><span class="bars__bar" style="--v:.7"></span><span class="bars__bar" style="--v:.55"></span><span class="bars__bar" style="--v:.9"></span><span class="bars__bar" style="--v:.65"></span></div>
+            <svg class="gauge" viewBox="0 0 120 68" aria-hidden="true"><path class="gauge__track" d="M10 60a50 50 0 01100 0"/><path class="gauge__val" pathLength="1" style="--off:.32" d="M10 60a50 50 0 01100 0"/></svg>
+          </div>
+          <p class="sr-only">Barras verticais com cinco valores e medidor em 68%.</p>
+        </article>
+
+        <article class="card ds__block">
+          <h3 class="h4"><span class="num">15</span>Timeline</h3>
+          <div class="tl">
+            <div class="tl__item is-done"><span class="tl__dot"></span>Escopo aprovado</div>
+            <div class="tl__item is-done"><span class="tl__dot"></span>Autorização registrada</div>
+            <div class="tl__item is-current"><span class="tl__dot"></span>Sessão em execução</div>
+            <div class="tl__item"><span class="tl__dot"></span>Relatório</div>
+          </div>
+        </article>
+
+        <article class="card ds__block ds__block--wide">
+          <h3 class="h4"><span class="num">16</span>Ícones</h3>
+          <p class="small muted" style="margin-bottom:14px">Traço 1,6, cantos arredondados, grade de 24 px. Lista gerada a partir do sprite.</p>
+          <div class="icon-grid" id="ds-icons"></div>
+        </article>
+
+        <article class="card ds__block ds__block--wide">
+          <h3 class="h4"><span class="num">17</span>Espaços da marca</h3>
+          <div class="grid-3">
+            <!-- [ESPAÇO DA MARCA] SVG oficial do logotipo -->
+            <div class="brand-slot">[ESPAÇO DA MARCA]<br>SVG oficial do logotipo</div>
+            <!-- [ESPAÇO DA MARCA] Símbolo do favicon e do aplicativo -->
+            <div class="brand-slot">[ESPAÇO DA MARCA]<br>Símbolo do favicon e do app</div>
+            <!-- [ESPAÇO DA MARCA] Fotografia e direção de arte -->
+            <div class="brand-slot">[ESPAÇO DA MARCA]<br>Fotografia e direção de arte</div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__grid">
+      <div>
+        <!-- [ESPAÇO DA MARCA] Substituir pelo SVG oficial do logotipo em Ivory. -->
+        <a class="wordmark" href="#inicio" aria-label="Hesde, voltar ao início">HESDE</a>
+        <p class="footer__tagline">Gestão contínua de exposições, auditoria e validação segura de riscos.</p>
+        <div class="footer__social">
+          <button class="icon-btn" type="button" aria-label="LinkedIn (link a definir)" data-tbd><svg class="ic ic--20" aria-hidden="true"><use href="#i-linkedin"/></svg></button>
+          <button class="icon-btn" type="button" aria-label="GitHub (link a definir)" data-tbd><svg class="ic ic--20" aria-hidden="true"><use href="#i-github"/></svg></button>
+          <button class="icon-btn" type="button" aria-label="YouTube (link a definir)" data-tbd><svg class="ic ic--20" aria-hidden="true"><use href="#i-youtube"/></svg></button>
+        </div>
+      </div>
+      <nav aria-label="Rodapé">
+        <ul class="footer__links">
+          <li><a href="#produto">Produto</a></li>
+          <li><button type="button" data-modal-open="modal-docs">Documentação</button></li>
+          <li><a href="#seguranca">Segurança</a></li>
+          <li><a href="#politica-privacidade" data-tbd>Privacidade <span class="tbd">[a definir]</span></a></li>
+          <li><a href="#termos" data-tbd>Termos <span class="tbd">[a definir]</span></a></li>
+          <li><a href="#contato">Contato</a></li>
+          <li><a href="#design-system" id="ds-open">Sistema de design</a></li>
+        </ul>
+      </nav>
+    </div>
+    <div class="footer__legal">
+      <p>Hesde — Plataforma de segurança e gestão de exposições.</p>
+      <p>Protótipo navegável. Telas e dados ilustrativos.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- Modal: documentação -->
+<div class="modal" id="modal-docs" aria-hidden="true">
+  <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="modal-docs-title" aria-describedby="modal-docs-desc">
+    <button class="icon-btn modal__close" type="button" data-modal-close aria-label="Fechar"><svg class="ic ic--20" aria-hidden="true"><use href="#i-x"/></svg></button>
+    <span class="tile" aria-hidden="true"><svg class="ic"><use href="#i-book"/></svg></span>
+    <h2 class="modal__title" id="modal-docs-title">Documentação em preparação</h2>
+    <p id="modal-docs-desc">A documentação pública vai reunir guias de instalação, modelo de dados, motor de política, formato das evidências e referência das integrações.</p>
+    <ul class="checklist" style="margin-top:20px">
+      <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Primeiros passos e modos de execução</li>
+      <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Escopo, autorização e níveis de atividade</li>
+      <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Trilha de auditoria e verificação offline</li>
+      <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Esquemas JSON e formatos de exportação</li>
+    </ul>
+    <div class="modal__actions">
+      <button class="btn btn--secondary" type="button" data-modal-close>Fechar</button>
+      <a class="btn btn--primary" href="#contato" data-demo data-interest="Falar com a equipe">Pedir acesso antecipado</a>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: download -->
+<div class="modal" id="modal-download" aria-hidden="true">
+  <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="modal-dl-title" aria-describedby="modal-dl-desc">
+    <button class="icon-btn modal__close" type="button" data-modal-close aria-label="Fechar"><svg class="ic ic--20" aria-hidden="true"><use href="#i-x"/></svg></button>
+    <span class="tile" aria-hidden="true"><svg class="ic"><use href="#i-download"/></svg></span>
+    <h2 class="modal__title" id="modal-dl-title">Download em preparação</h2>
+    <p id="modal-dl-desc">O Hesde Community ainda não tem uma versão pública para download. Deixe o seu contato e avisamos quando lançar.</p>
+    <div class="modal__actions">
+      <button class="btn btn--secondary" type="button" data-modal-close>Fechar</button>
+      <a class="btn btn--primary" href="#contato" data-demo data-interest="Community">Avisar quando lançar</a>
+    </div>
+  </div>
+</div>
+
+<!-- Glossário: fonte dos tooltips -->
+<dl id="glossary" hidden>
+  <dt>CTEM</dt><dd>Continuous Threat Exposure Management: gestão contínua de exposições. Um ciclo de descobrir, priorizar, validar e corrigir, repetido sem parar.</dd>
+  <dt>EPSS</dt><dd>Exploit Prediction Scoring System: estimativa da probabilidade de uma vulnerabilidade ser explorada nos próximos 30 dias.</dd>
+  <dt>KEV</dt><dd>Known Exploited Vulnerabilities: catálogo da CISA com vulnerabilidades que já têm exploração ativa conhecida.</dd>
+  <dt>MITRE ATT&amp;CK</dt><dd>Base pública de táticas e técnicas de adversários, usada para mapear validações e detecções.</dd>
+  <dt>SIEM</dt><dd>Security Information and Event Management: plataforma que centraliza e correlaciona eventos de segurança.</dd>
+  <dt>SOAR</dt><dd>Security Orchestration, Automation and Response: automatiza playbooks de resposta a incidentes.</dd>
+  <dt>GRC</dt><dd>Governança, riscos e conformidade.</dd>
+  <dt>SSO</dt><dd>Single sign-on: um login corporativo para vários sistemas.</dd>
+  <dt>RBAC</dt><dd>Controle de acesso baseado em papéis: cada pessoa faz só o que o seu papel permite.</dd>
+  <dt>Hardening</dt><dd>Endurecimento de configuração: reduzir a superfície de ataque com configurações seguras.</dd>
+  <dt>SBOM</dt><dd>Software Bill of Materials: a lista de componentes e dependências de cada versão.</dd>
+  <dt>N0–N3</dt><dd>Níveis de atividade. N0: sem contato com o alvo. N1: leitura de configuração, local ou autenticada. N2: rede ativa não intrusiva, como conexão TCP e handshake TLS. N3: validação ativa, sempre com aprovação humana.</dd>
+</dl>
+
+<div class="tip" id="tip" role="tooltip"></div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<div class="grid-overlay" id="grid-overlay" aria-hidden="true" hidden><div class="container"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div></div>
+
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
