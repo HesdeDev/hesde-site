@@ -304,7 +304,7 @@
     btn.addEventListener("click", () => setMenu(!menu.classList.contains("is-open")));
     menu.addEventListener("click", (e) => { if (e.target.closest("a")) setMenu(false); });
     document.addEventListener("keydown", (e) => { if (e.key === "Escape" && menu.classList.contains("is-open") && !Modal.isOpen()) setMenu(false); });
-    addEventListener("resize", () => { if (innerWidth > 1100) setMenu(false); });
+    addEventListener("resize", () => { if (innerWidth > 1150) setMenu(false); });
   }
 
   function initReveal() {
@@ -577,7 +577,7 @@
       selected = id;
       $$("tr[data-id]", rows).forEach((tr) => tr.classList.toggle("is-selected", tr.dataset.id === id));
       detail.innerHTML = '<div style="display:grid;gap:10px">' + skel("70%", 16) + skel("50%") + skel("100%", 90, "margin-top:8px") + skel("100%", 60) + "</div>";
-      if (matchMedia("(max-width: 900px)").matches) detail.scrollIntoView({ behavior: smooth(), block: "nearest" });
+      if (matchMedia("(max-width: 1150px)").matches) detail.scrollIntoView({ behavior: smooth(), block: "nearest" });
       const a = await api.getAsset(id);
       if (selected !== id) return;
       const find = a.findings.length
@@ -878,11 +878,13 @@
       aCheck.className = "trail__check";
       rowsEl.innerHTML = ("<tr aria-hidden=\"true\"><td>" + skel("70%") + "</td>" + ("<td>" + skel("80%") + "</td>").repeat(5) + "<td></td></tr>").repeat(8);
       const data = await api.listAuditEvents({ tamper });
+      $("#trail-date").textContent = "Eventos de " + data.events[0].at.slice(0, 10);
       rowsEl.innerHTML = data.events.map((e) =>
-        '<tr data-seq="' + e.seq + '"><td><span class="cell-title num">#' + e.seq + '</span><span class="cell-sub">' + esc(e.at) + "</span></td>" +
+        '<tr data-seq="' + e.seq + '"><td><span class="cell-title num">#' + e.seq + '</span><span class="cell-sub">' + esc(e.at.slice(11)) + "</span></td>" +
         "<td>" + esc(e.actor) + '</td><td><span class="mono">' + esc(e.action) + '</span><span class="cell-sub' + (e.tampered && e.tampered.indexOf("detail") >= 0 ? " is-tampered" : "") + '">' + esc(e.detail) + "</span></td>" +
         '<td><span class="res' + (e.result === "deny" ? " res--deny" : e.result === "allow" ? " res--allow" : "") + '">' + esc(e.result) + "</span></td>" +
-        cell(e, "prev") + cell(e, "hash") + '<td><span class="trail__check" aria-hidden="true">' + icon("check") + "</span></td></tr>").join("");
+        cell(e, "prev") + cell(e, "hash").replace("</td>", '<span class="cell-sub trail-prev' + (e.tampered && e.tampered.indexOf("prev") >= 0 ? " is-tampered" : "") + '">prev ' + esc(e.prev) + "</span></td>") +
+        '<td><span class="trail__check" aria-hidden="true">' + icon("check") + "</span></td></tr>").join("");
     }
     setupSeg($("#trail-sim"), (v) => { tamper = v; load(); });
     verify.addEventListener("click", async () => {

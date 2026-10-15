@@ -15,7 +15,7 @@
 <meta name="twitter:card" content="summary">
 <!-- [a definir] URL canônica da versão publicada do site -->
 <link rel="canonical" href="[a definir]">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23F3EFE8'/%3E%3Ctext x='32' y='47' text-anchor='middle' font-family='Bodoni Moda,Bodoni 72,Didot,Georgia,serif' font-size='44' font-weight='500' fill='%23340C0E'%3EH%3C/text%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23F3EFE8'/%3E%3Ctext x='32' y='47' text-anchor='middle' font-family='Courier New,Courier,monospace' font-size='46' font-weight='700' fill='%23340C0E'%3EH%3C/text%3E%3C/svg%3E">
 <script>
   /* Tema antes da pintura: o alternador tem prioridade sobre o sistema. */
   (function () {
@@ -26,9 +26,6 @@
     d.className += (dark ? " is-dark" : "") + " js";
   })();
 </script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,500&family=Geist:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
@@ -120,7 +117,7 @@
         <svg class="ic ic--20 i-moon" aria-hidden="true"><use href="#i-moon"/></svg>
         <svg class="ic ic--20 i-sun" aria-hidden="true"><use href="#i-sun"/></svg>
       </button>
-      <a class="btn btn--primary btn--sm" href="#contato" data-demo>Solicitar demonstração</a>
+      <a class="btn btn--primary btn--sm" href="#contato" data-demo><span class="lbl-long">Solicitar demonstração</span><span class="lbl-short">Demonstração</span></a>
       <button class="icon-btn menu-btn" type="button" id="menu-btn" aria-expanded="false" aria-controls="mobile-menu" aria-label="Abrir menu">
         <svg class="ic ic--24" aria-hidden="true"><use href="#i-menu"/></svg>
       </button>
@@ -560,6 +557,7 @@
               <button class="btn btn--secondary" type="button" id="trail-export"><svg class="ic ic--16" aria-hidden="true"><use href="#i-download"/></svg>Exportar para verificação offline</button>
             </div>
           </div>
+          <p class="small muted" id="trail-date" style="margin-bottom:8px">Eventos da sessão</p>
           <div class="table-wrap">
             <table class="table">
               <caption class="sr-only">Eventos da trilha de auditoria, encadeados por hash</caption>
@@ -1256,16 +1254,16 @@
 
         <article class="card ds__block ds__block--wide">
           <h3 class="h4"><span class="num">04</span>Tipografia</h3>
-          <div class="type-row"><code>--t-display · Bodoni 500</code><span class="display" style="font-size:clamp(2rem,1.4rem + 2vw,3rem)">Exposição com contexto</span></div>
-          <div class="type-row"><code>--t-h2 · Bodoni 500</code><span class="h2">Títulos de seção</span></div>
+          <div class="type-row"><code>--t-display · Director UA</code><span class="display" style="font-size:clamp(2rem,1.4rem + 2vw,3rem)">Exposição com contexto</span></div>
+          <div class="type-row"><code>--t-h2 · Director UA</code><span class="h2">Títulos de seção</span></div>
           <div class="type-row"><code>--t-numeral</code><span class="numeral">01 02 03</span></div>
-          <div class="type-row"><code>--t-h3 · Geist 600</code><span class="h3">Título de card</span></div>
-          <div class="type-row"><code>--t-h4 · Geist 600</code><span class="h4">Subtítulo de painel</span></div>
-          <div class="type-row"><code>--t-lead · Geist 400</code><span class="lead">Subtítulo de seção, até 60 caracteres por linha.</span></div>
-          <div class="type-row"><code>--t-body · Geist 400</code><span>Texto corrido com altura de linha de 1,65.</span></div>
-          <div class="type-row"><code>--t-ui · Geist 500</code><span style="font:500 var(--t-ui)/1.4 var(--font-sans)">Botões, abas e tabelas</span></div>
-          <div class="type-row"><code>--t-small · Geist 400</code><span class="small">Notas e legendas</span></div>
-          <div class="type-row"><code>--t-eyebrow · Geist 600</code><span class="eyebrow" style="margin:0">Rótulo de seção</span></div>
+          <div class="type-row"><code>--t-h3 · Director UA</code><span class="h3">Título de card</span></div>
+          <div class="type-row"><code>--t-h4 · Director UA</code><span class="h4">Subtítulo de painel</span></div>
+          <div class="type-row"><code>--t-lead · Director UA</code><span class="lead">Subtítulo de seção, até 60 caracteres por linha.</span></div>
+          <div class="type-row"><code>--t-body · Director UA</code><span>Texto corrido com altura de linha de 1,65.</span></div>
+          <div class="type-row"><code>--t-ui · Director UA</code><span style="font:500 var(--t-ui)/1.4 var(--font-sans)">Botões, abas e tabelas</span></div>
+          <div class="type-row"><code>--t-small · Director UA</code><span class="small">Notas e legendas</span></div>
+          <div class="type-row"><code>--t-eyebrow · Director UA</code><span class="eyebrow" style="margin:0">Rótulo de seção</span></div>
           <div class="type-row"><code>--t-mono · Director UA</code><span class="mono">policy.decision · target.in_scope · sha256:9c1e…4b07</span></div>
         </article>
 

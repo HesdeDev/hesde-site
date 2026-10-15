@@ -130,7 +130,7 @@ As validações mostradas são sempre benignas e detectáveis. Exemplos permitid
 - Anime só `transform` e `opacity`. Reserve espaço para tudo que carrega, sem layout shift.
 - Pause laços animados quando estiverem fora da tela ou com a aba oculta (IntersectionObserver e `visibilitychange`).
 - Nenhuma imagem raster: ícones e ilustrações em SVG inline.
-- A única dependência externa é o Google Fonts. A fonte mono é um arquivo local em `assets/fonts/`.
+- Nenhuma dependência externa: a fonte é um arquivo local em `assets/fonts/`.
 - Orçamento sem minificar: CSS ≤ 90 KB, JS ≤ 80 KB.
 
 ---
@@ -162,17 +162,18 @@ O vermelho de "Crítico" precisa ser inconfundível. Por isso o Signature Red fi
 
 ### 3.2 Tipografia
 
-- **Bodoni Moda 500:** wordmark e títulos editoriais (H1, H2, título do CTA, numerais grandes). Nunca abaixo de 28 px.
-- **Geist 400/500/600:** texto, navegação, UI e títulos H3/H4.
-- **Director UA 400:** logs, hashes, códigos de motivo, endereços. Monoespaçada, da Velvetyne Type Foundry, sob a SIL OFL 1.1; arquivo local em WOFF2, com a licença ao lado (`assets/fonts/OFL.txt`). Só tem o peso 400: não pedir negrito nela.
+- **Director UA 400 em todo o site:** wordmark, títulos, texto, interface, logs, hashes e códigos. Monoespaçada, com serifas de máquina de escrever, da Velvetyne Type Foundry, sob a SIL OFL 1.1.
+  - Arquivo local `assets/fonts/DirectorUA-Regular.woff2`, com a licença ao lado (`assets/fonts/OFL.txt`).
+  - Só tem o peso Regular. A hierarquia vem de tamanho, cor, caixa alta e espaço; `font-synthesis-weight: none` impede negrito falso.
+  - Cada caractere ocupa 0,70 em: os títulos usam uma escala menor e colunas estreitas precisam quebrar linha.
 - **Números** de KPIs e tabelas com `font-variant-numeric: tabular-nums`.
 
 ### 3.3 Logotipo
 
-- **Wordmark tipográfico:** "HESDE" em Bodoni Moda 500, caixa alta, `letter-spacing: 0.28em`. Burgundy no tema claro; Ivory no escuro e no rodapé.
+- **Wordmark tipográfico:** "HESDE" em Director UA, caixa alta, `letter-spacing: 0.28em`. Burgundy no tema claro; Ivory no escuro e no rodapé.
 - **Espaço para o logo oficial:** comentário `[ESPAÇO DA MARCA] Substituir pelo SVG oficial do logotipo` no header e no rodapé.
 - **Regras de uso:** não esticar, não aplicar sombra nem efeito, respeitar área de proteção igual à altura da letra "H".
-- **Favicon:** SVG inline (data URI) com a letra "H" em Bodoni, burgundy sobre ivory.
+- **Favicon:** SVG inline (data URI) com a letra "H" em Courier New (o favicon não carrega fontes da página), burgundy sobre ivory.
 
 ### 3.4 Voz
 
@@ -313,30 +314,25 @@ As sombras no tema escuro usam `rgba(0, 0, 0, 0.4–0.7)`.
 
 | Token | Fonte | Tamanho / altura de linha | Uso |
 |---|---|---|---|
-| `--t-display` | Bodoni Moda 500, tracking −0,01em | `clamp(2.5rem, 1.6rem + 3.2vw, 4.5rem)` / 1,04 | H1 do hero |
-| `--t-h2` | Bodoni Moda 500 | `clamp(2rem, 1.4rem + 2vw, 3rem)` / 1,1 | Títulos de seção, CTA |
-| `--t-numeral` | Bodoni Moda 500 | 3rem / 1 | Numerais "01–04" |
-| `--t-h3` | Geist 600 | 1.25rem / 1,35 | Títulos de card |
-| `--t-h4` | Geist 600 | 1rem / 1,4 | Subtítulos de painel |
-| `--t-lead` | Geist 400 | 1.1875rem / 1,6, máx. 60ch, cor `--ink-2` | Subtítulos de seção |
-| `--t-body` | Geist 400 | 1.0625rem / 1,65 | Texto corrido |
-| `--t-ui` | Geist 500 | 0.9375rem / 1,4 | Botões, abas, tabelas |
-| `--t-small` | Geist 400 | 0.875rem / 1,5 | Notas, legendas |
-| `--t-eyebrow` | Geist 600 | 0.75rem, caixa alta, tracking 0,14em, cor `--primary` | Rótulos de seção |
-| `--t-mono` | Director UA 400 | 0.8125rem / 1,6 | Logs, hashes, códigos |
+Todos os tokens usam a Director UA 400 (`--font-display`, `--font-sans` e `--font-mono` apontam para ela).
 
-**Carregamento:** Google Fonts com `preconnect` e `display=swap`:
+| Token | Tamanho / altura de linha | Uso |
+|---|---|---|
+| `--t-display` | `clamp(2rem, 1.25rem + 2.2vw, 3.25rem)` / 1,08; no hero em duas colunas, até 2,875rem | H1 do hero |
+| `--t-h2` | `clamp(1.625rem, 1.15rem + 1.4vw, 2.375rem)` / 1,15 | Títulos de seção |
+| `--t-numeral` | 2.5rem / 1 | Numerais "01–04" |
+| `--t-h3` | 1.1875rem / 1,35 | Títulos de card |
+| `--t-h4` | 1rem / 1,4 | Subtítulos de painel |
+| `--t-lead` | 1.0625rem / 1,6, máx. 60ch, cor `--ink-2` | Subtítulos de seção |
+| `--t-body` | 1rem / 1,65 | Texto corrido |
+| `--t-ui` | 0.875rem / 1,4 | Botões, abas, tabelas |
+| `--t-small` | 0.8125rem / 1,5 | Notas, legendas |
+| `--t-eyebrow` | 0.75rem, caixa alta, tracking 0,08em, cor `--primary` | Rótulos de seção |
+| `--t-mono` | 0.8125rem / 1,6 | Logs, hashes, códigos |
 
-- Bodoni Moda (opsz 6..96, peso 500);
-- Geist (400, 500, 600).
+**Carregamento:** `@font-face` local com `font-display: swap`, sem requisição externa.
 
-A Director UA vem de `assets/fonts/DirectorUA-Regular.woff2` por `@font-face`, com `font-display: swap`. Ela é 0,70 em de largura por caractere (a Geist Mono era 0,60 em): colunas com texto mono longo precisam quebrar linha.
-
-**Fallbacks:**
-
-- Bodoni: `"Bodoni 72", Didot, Georgia, serif`;
-- Geist: `ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif`;
-- Director UA: `ui-monospace, Menlo, Consolas, monospace`.
+**Fallback:** `ui-monospace, Menlo, Consolas, "Courier New", monospace`. Os caracteres que a fonte não tem (`º`, `ª`, `▼`, `▲`, `✓`) aparecem na fonte de reserva.
 
 ### 4.5 Espaçamento, grade, forma e movimento
 
@@ -344,7 +340,7 @@ A Director UA vem de `assets/fonts/DirectorUA-Regular.woff2` por `@font-face`, c
 - **Seções:** padding vertical de 128 px no desktop, 96 no tablet e 72 no mobile.
 - **Contêiner:** largura máxima de 1.200 px; margem lateral de 32 px (desktop), 24 (tablet) e 16 (mobile). Grade de 12 colunas, gutter de 24 px.
 - **Breakpoints:**
-  - 1100 px: o nav vira menu;
+  - 1150 px: o nav vira menu (entre 1151 e 1360 px, o botão do header mostra só "Demonstração");
   - 900 px: grades de 3 viram 2 e as timelines ficam verticais;
   - 600 px: uma coluna.
 - **Raios:**
@@ -385,7 +381,7 @@ Todos reutilizáveis, por classe, com estados completos.
   - hover: `translateY(-3px)`, `--shadow-2` e borda `--line-strong`;
   - tile de ícone de 40 × 40, fundo `--primary-soft`, ícone `--primary`; no hover, o ícone redesenha o traço (stroke-dashoffset, 600 ms).
 - **Badges de severidade:**
-  - altura 24, padding 0 8, raio 999, Geist 600 12 px;
+  - altura 24, padding 0 8, raio 999, 12 px;
   - ícone de 12 px mais rótulo;
   - fundo `*-soft`, texto `*`, borda `*-line`.
 - **Chips:**
@@ -455,10 +451,10 @@ Página única com âncoras, na ordem abaixo. Os fundos alternam como indicado.
   - nav: Produto, Plataforma, Segurança, Recursos, Preços, Documentação, Contato;
   - à direita, o alternador de tema (ícones lua e sol, `aria-label` dinâmico) e o botão primário sm "Solicitar demonstração".
 - **Links do nav:**
-  - Geist 500 de 15 px em `--ink-2`, hover `--ink`;
+  - 14 px em `--ink-2`, hover `--ink`;
   - seção ativa marcada por uma barra de 2 px `--primary` que desliza sob o link, com `aria-current`;
   - "Documentação" abre o modal "Documentação em preparação".
-- **Mobile (abaixo de 1100 px):**
+- **Mobile (abaixo de 1150 px):**
   - botão hambúrguer;
   - o menu desce com slide e fade (220 ms), trava a rolagem do body, fecha com Esc e põe o foco no primeiro link;
   - itens de 56 px separados por `--line`, com o botão primário de largura total no fim.
@@ -818,7 +814,7 @@ Termos com tooltip de glossário: CTEM, EPSS, KEV, MITRE ATT&CK, SIEM, SOAR, GRC
 - **Textos:** eyebrow "Como funciona"; H2 "Quatro passos do primeiro acesso ao acompanhamento contínuo."
 - **Layout:**
   - quatro colunas ligadas por uma linha horizontal que se preenche em `--primary` conforme o scroll (vertical no mobile);
-  - numerais "01–04" em Bodoni (`--t-numeral`, cor `--primary`);
+  - numerais "01–04" em `--t-numeral`, cor `--primary`;
   - cada passo ganha destaque ao entrar na tela.
 
 | Passo | Texto |
@@ -840,7 +836,7 @@ Termos com tooltip de glossário: CTEM, EPSS, KEV, MITRE ATT&CK, SIEM, SOAR, GRC
   - eyebrow "Segurança e confiança", em HESDE Light;
   - H2: "Construído com segurança desde o núcleo.";
   - lead: "Uma ferramenta que olha para as fraquezas de uma empresa precisa ser mais rigorosa que o ambiente que audita. Os controles abaixo valem em todos os planos e não são vendidos à parte.";
-  - citação em Bodoni 28 px, com fio vertical em HESDE Light: "Nenhuma exploração destrutiva, nunca. Não existe nível de atividade destrutivo no Hesde."
+  - citação em 24 px, com fio vertical em HESDE Light: "Nenhuma exploração destrutiva, nunca. Não existe nível de atividade destrutivo no Hesde."
 - **Direita:** timeline com 8 controles.
   - Linha em `--band-security-line`, progresso em HESDE Light conforme o scroll.
   - O item atual ganha opacidade total e ponto preenchido; os anteriores ficam marcados.
@@ -873,7 +869,7 @@ Termos com tooltip de glossário: CTEM, EPSS, KEV, MITRE ATT&CK, SIEM, SOAR, GRC
 ### 6.12 Prova social (fundo `--bg-alt`)
 
 - **Textos:** eyebrow "Confiança"; H2 "Resultados que a sua equipe consegue demonstrar."
-- **Quatro métricas qualitativas** em linha, sem números: ícone `--primary`, texto Geist 500 18 px, separadores verticais `--line`.
+- **Quatro métricas qualitativas** em linha, sem números: ícone `--primary`, texto de 18 px, separadores verticais `--line`.
   - "Menos ruído operacional."
   - "Priorização baseada em risco."
   - "Evidências prontas para auditoria."
@@ -887,7 +883,7 @@ Termos com tooltip de glossário: CTEM, EPSS, KEV, MITRE ATT&CK, SIEM, SOAR, GRC
 - **Carrossel de depoimentos `[ESPAÇO RESERVADO]`:** 3 slides placeholder.
   - Texto entre colchetes, ex.: "[Depoimento de cliente: como a priorização mudou a rotina do time]".
   - Avatar tracejado, "[Nome]" e "[Cargo] · [Empresa]".
-  - Citação em Bodoni 28 px.
+  - Citação em 24 px.
   - Navegação: setas, dots (`aria-current`), swipe (pointer events) e setas do teclado. Sem autoplay.
   - Região live anuncia "Depoimento N de 3". Slides inativos com `aria-hidden` e `inert`.
 - **Comentários no HTML:** "Substituir só com autorização por escrito e de uso de marca."
@@ -1022,7 +1018,7 @@ Termos com tooltip de glossário: CTEM, EPSS, KEV, MITRE ATT&CK, SIEM, SOAR, GRC
 ### 6.16 CTA final (faixa Signature Red)
 
 - **Fundo:** `--band-cta-bg` (`#CC383E`). É o único uso de Signature Red na interface.
-- **Título:** "Transforme exposições em decisões de segurança.", em Bodoni, mínimo de 40 px, cor Ivory `#F3EFE8` (contraste de 4,36:1, válido para texto grande). Nenhum texto menor que 24 px sobre o vermelho.
+- **Título:** "Transforme exposições em decisões de segurança.", mínimo de 32 px, cor Ivory `#F3EFE8` (contraste de 4,36:1, válido para texto grande). Nenhum texto menor que 24 px sobre o vermelho.
 - **Botões (lg):**
   - "Solicitar demonstração": fundo `#340C0E`, texto `#F8C6C8`;
   - "Falar com a equipe": fundo `#F3EFE8`, texto `#340C0E`.
