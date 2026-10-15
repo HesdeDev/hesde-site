@@ -1,6 +1,6 @@
 # Site institucional do Hesde
 
-Protótipo navegável e interativo do site de lançamento do Hesde, feito a partir de [`PROMPT-CURSOR.md`](PROMPT-CURSOR.md). HTML, CSS e JavaScript puros, sem framework e sem etapa de build. A única dependência externa é o Google Fonts.
+Protótipo navegável e interativo do site de lançamento do Hesde, feito a partir de [`PROMPT-CURSOR.md`](PROMPT-CURSOR.md). HTML, CSS e JavaScript puros, sem framework e sem etapa de build. A única dependência externa é o Google Fonts (Bodoni Moda e Geist); a fonte mono, Director UA, é um arquivo local.
 
 ## Como abrir
 
@@ -16,6 +16,7 @@ Protótipo navegável e interativo do site de lançamento do Hesde, feito a part
 | `assets/styles.css` | Sistema de design: tokens em `:root`, tema escuro, componentes, seções, sistema de design e responsividade |
 | `assets/app.js` | Interações. Um módulo `init*` por área, cada um em `try/catch`: um erro num módulo não derruba os outros |
 | `assets/data.js` | Dados fictícios e a API simulada `HesdeApi`, única camada de dados da interface |
+| `assets/fonts/` | Director UA em WOFF2 e a licença dela (`OFL.txt`) |
 
 ## O que é interativo
 
@@ -60,6 +61,18 @@ Procure no `index.html` por:
 - `[ESPAÇO RESERVADO]`: logos de clientes e parceiros (marquee) e depoimentos (carrossel). Substituir só com autorização por escrito e de uso de marca.
 - `[a definir]`: URL canônica, Política de Privacidade, Termos e links das redes sociais.
 
+## Fontes
+
+| Papel | Fonte | Origem |
+|---|---|---|
+| Títulos, wordmark, numerais | Bodoni Moda 500 | Google Fonts |
+| Texto e interface | Geist 400, 500 e 600 | Google Fonts |
+| Logs, hashes, códigos e endereços | Director UA 400 | `assets/fonts/DirectorUA-Regular.woff2` |
+
+- **Director UA**, de Ange Degheest, May Jolivet e Justine Herbel, publicada pela [Velvetyne Type Foundry](http://www.velvetyne.fr/) sob a SIL Open Font License 1.1. O WOFF2 é só a conversão de formato do TTF original, sem glifos removidos, e a licença acompanha o arquivo em `assets/fonts/OFL.txt`, como a OFL exige.
+- Para trocar a fonte mono, substitua o arquivo em `assets/fonts/`, ajuste o `@font-face` no topo de `assets/styles.css` e a variável `--font-mono`.
+- Aberto direto do disco (`file://`), alguns navegadores bloqueiam fontes locais; nesse caso o texto mono cai na fonte monoespaçada do sistema. Por HTTP a fonte carrega normalmente.
+
 ## Acessibilidade e movimento
 
 - Contraste AA medido nos dois temas. O sistema de design mostra a razão de cada par, calculada ao vivo no tema ativo.
@@ -68,7 +81,7 @@ Procure no `index.html` por:
 
 ## Orçamento
 
-Sem minificar: `styles.css` com 87 KB (limite de 90 KB) e `app.js` com 69 KB (limite de 80 KB). O `data.js` (35 KB) é a camada de dados com JSDoc e fica fora dessa conta; somado ao `app.js`, o JavaScript passa do limite.
+Sem minificar: `styles.css` com 88 KB (limite de 90 KB) e `app.js` com 69 KB (limite de 80 KB). O `data.js` (35 KB) é a camada de dados com JSDoc e fica fora dessa conta; somado ao `app.js`, o JavaScript passa do limite.
 
 ## Pendências
 

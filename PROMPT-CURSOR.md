@@ -130,7 +130,7 @@ As validações mostradas são sempre benignas e detectáveis. Exemplos permitid
 - Anime só `transform` e `opacity`. Reserve espaço para tudo que carrega, sem layout shift.
 - Pause laços animados quando estiverem fora da tela ou com a aba oculta (IntersectionObserver e `visibilitychange`).
 - Nenhuma imagem raster: ícones e ilustrações em SVG inline.
-- A única dependência externa é o Google Fonts.
+- A única dependência externa é o Google Fonts. A fonte mono é um arquivo local em `assets/fonts/`.
 - Orçamento sem minificar: CSS ≤ 90 KB, JS ≤ 80 KB.
 
 ---
@@ -164,7 +164,7 @@ O vermelho de "Crítico" precisa ser inconfundível. Por isso o Signature Red fi
 
 - **Bodoni Moda 500:** wordmark e títulos editoriais (H1, H2, título do CTA, numerais grandes). Nunca abaixo de 28 px.
 - **Geist 400/500/600:** texto, navegação, UI e títulos H3/H4.
-- **Geist Mono 400/500:** logs, hashes, códigos de motivo, endereços.
+- **Director UA 400:** logs, hashes, códigos de motivo, endereços. Monoespaçada, da Velvetyne Type Foundry, sob a SIL OFL 1.1; arquivo local em WOFF2, com a licença ao lado (`assets/fonts/OFL.txt`). Só tem o peso 400: não pedir negrito nela.
 - **Números** de KPIs e tabelas com `font-variant-numeric: tabular-nums`.
 
 ### 3.3 Logotipo
@@ -323,19 +323,20 @@ As sombras no tema escuro usam `rgba(0, 0, 0, 0.4–0.7)`.
 | `--t-ui` | Geist 500 | 0.9375rem / 1,4 | Botões, abas, tabelas |
 | `--t-small` | Geist 400 | 0.875rem / 1,5 | Notas, legendas |
 | `--t-eyebrow` | Geist 600 | 0.75rem, caixa alta, tracking 0,14em, cor `--primary` | Rótulos de seção |
-| `--t-mono` | Geist Mono 400 | 0.8125rem / 1,6 | Logs, hashes, códigos |
+| `--t-mono` | Director UA 400 | 0.8125rem / 1,6 | Logs, hashes, códigos |
 
 **Carregamento:** Google Fonts com `preconnect` e `display=swap`:
 
 - Bodoni Moda (opsz 6..96, peso 500);
-- Geist (400, 500, 600);
-- Geist Mono (400, 500).
+- Geist (400, 500, 600).
+
+A Director UA vem de `assets/fonts/DirectorUA-Regular.woff2` por `@font-face`, com `font-display: swap`. Ela é 0,70 em de largura por caractere (a Geist Mono era 0,60 em): colunas com texto mono longo precisam quebrar linha.
 
 **Fallbacks:**
 
 - Bodoni: `"Bodoni 72", Didot, Georgia, serif`;
 - Geist: `ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif`;
-- Geist Mono: `ui-monospace, Menlo, Consolas, monospace`.
+- Director UA: `ui-monospace, Menlo, Consolas, monospace`.
 
 ### 4.5 Espaçamento, grade, forma e movimento
 
