@@ -266,11 +266,12 @@
     const links = $$(".nav__link[data-nav]", nav);
     const MAP = { produto: "produto", plataforma: "plataforma", "antes-depois": "plataforma", recursos: "recursos", "como-funciona": "recursos", seguranca: "seguranca", precos: "precos", contato: "contato" };
     const sections = $$("main > section");
-    let active = null;
+    let active = null, lastW = innerWidth;
     function moveBar() {
       const l = links.find((x) => x.dataset.nav === active);
       if (!l || !l.offsetWidth) { bar.classList.remove("is-on"); return; }
-      bar.style.transform = "translateX(" + (l.offsetLeft + 10) + "px) scaleX(" + (l.offsetWidth - 20) + ")";
+      const pad = parseFloat(getComputedStyle(l).paddingLeft) || 0;
+      bar.style.transform = "translateX(" + (l.offsetLeft + pad) + "px) scaleX(" + (l.offsetWidth - 2 * pad) + ")";
       bar.classList.add("is-on");
     }
     onFrame(() => {
@@ -278,6 +279,7 @@
       const line = innerHeight * 0.35;
       const sec = sections.find((s) => { if (s.hidden) return false; const r = s.getBoundingClientRect(); return r.top <= line && r.bottom > line; });
       const key = sec ? MAP[sec.id] || null : null;
+      if (innerWidth !== lastW) { lastW = innerWidth; moveBar(); }
       if (key !== active) {
         active = key;
         links.forEach((l) => (l.dataset.nav === key ? l.setAttribute("aria-current", "true") : l.removeAttribute("aria-current")));
@@ -421,7 +423,7 @@
         row = i;
         const r = rows[i];
         rows.forEach((x, k) => x.classList.toggle("is-hot", k === i));
-        pointer.style.transform = "translate(" + Math.round(r.offsetWidth * 0.58) + "px," + Math.round(r.offsetTop + 20) + "px)";
+        pointer.style.transform = "translateY(" + Math.round(r.offsetTop + 20) + "px)";
         pointer.classList.add("is-on");
         detail.classList.remove("is-on");
         setTimeout(() => {
