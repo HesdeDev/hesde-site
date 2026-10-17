@@ -1,8 +1,14 @@
+Fonts in this folder, all licensed under the SIL Open Font License, Version 1.1.
+Both WOFF2 files are format conversions of the original TTF files, with no glyphs removed or altered.
+
 Director UA (DirectorUA-Regular.woff2), version 1.002
 Designers: Ange Degheest, May Jolivet & Justine Herbel
 Publisher: Velvetyne Type Foundry (http://www.velvetyne.fr/)
 The font name table carries no copyright line; the credits above come from its metadata.
-The WOFF2 file is a format conversion of the original TTF, with no glyphs removed or altered.
+
+Cinzel (Cinzel-Regular.woff2), version 2.000
+Copyright 2020 The Cinzel Project Authors (https://github.com/NDISCOVER/Cinzel)
+Designer: Natanael Gama
 
 This Font Software is licensed under the SIL Open Font License, Version 1.1.
 This license is copied below, and is also available with a FAQ at:

@@ -63,7 +63,12 @@ Procure no `index.html` por:
 
 ## Fontes
 
-O site inteiro usa a **Director UA 400** (`assets/fonts/DirectorUA-Regular.woff2`): wordmark, títulos, texto, interface, logs e códigos. Ela é monoespaçada e só tem o peso Regular, então a hierarquia vem de tamanho, cor e caixa alta, sem negrito.
+| Onde | Fonte | Arquivo |
+|---|---|---|
+| Título do hero (H1) | Cinzel 400, de Natanael Gama | `assets/fonts/Cinzel-Regular.woff2` |
+| Todo o resto: wordmark, títulos, texto, interface, logs e códigos | Director UA 400 | `assets/fonts/DirectorUA-Regular.woff2` |
+
+As duas só têm o peso Regular, então a hierarquia vem de tamanho, cor e caixa alta, sem negrito. As duas estão sob a SIL Open Font License 1.1, com créditos e licença em `assets/fonts/OFL.txt`.
 
 - **Director UA**, de Ange Degheest, May Jolivet e Justine Herbel, publicada pela [Velvetyne Type Foundry](http://www.velvetyne.fr/) sob a SIL Open Font License 1.1. O WOFF2 é só a conversão de formato do TTF original, sem glifos removidos, e a licença acompanha o arquivo em `assets/fonts/OFL.txt`, como a OFL exige.
 - Para trocar a fonte, substitua o arquivo em `assets/fonts/` e ajuste o `@font-face` no topo de `assets/styles.css` e as variáveis `--font-display`, `--font-sans` e `--font-mono`. Como a escala e os pontos de quebra foram calibrados para uma fonte larga, confira o layout em várias larguras depois da troca.

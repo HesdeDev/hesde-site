@@ -162,7 +162,8 @@ O vermelho de "Crítico" precisa ser inconfundível. Por isso o Signature Red fi
 
 ### 3.2 Tipografia
 
-- **Director UA 400 em todo o site:** wordmark, títulos, texto, interface, logs, hashes e códigos. Monoespaçada, com serifas de máquina de escrever, da Velvetyne Type Foundry, sob a SIL OFL 1.1.
+- **Cinzel 400 só no H1 do hero** (Natanael Gama, SIL OFL 1.1; `assets/fonts/Cinzel-Regular.woff2`). Inscricional, com as minúsculas em versalete. `clamp(2.25rem, 1.15rem + 1.95vw, 3rem)` em duas colunas e `clamp(2rem, 1.2rem + 3.6vw, 3rem)` em uma, entrelinha 1,12, tracking 0,02em; `font-display: block`, para o título não trocar de fonte depois de aparecer.
+- **Director UA 400 no resto do site:** wordmark, títulos, texto, interface, logs, hashes e códigos. Monoespaçada, com serifas de máquina de escrever, da Velvetyne Type Foundry, sob a SIL OFL 1.1.
   - Arquivo local `assets/fonts/DirectorUA-Regular.woff2`, com a licença ao lado (`assets/fonts/OFL.txt`).
   - Só tem o peso Regular. A hierarquia vem de tamanho, cor, caixa alta e espaço; `font-synthesis-weight: none` impede negrito falso.
   - Cada caractere ocupa 0,70 em: os títulos usam uma escala menor e colunas estreitas precisam quebrar linha.
@@ -318,7 +319,7 @@ Todos os tokens usam a Director UA 400 (`--font-display`, `--font-sans` e `--fon
 
 | Token | Tamanho / altura de linha | Uso |
 |---|---|---|
-| `--t-display` | `clamp(2rem, 1.25rem + 2.2vw, 3.25rem)` / 1,08; no hero em duas colunas, até 2,875rem | H1 do hero |
+| `--t-display` | `clamp(2rem, 1.25rem + 2.2vw, 3.25rem)` / 1,08 | Títulos de destaque (o H1 do hero usa a Cinzel, seção 3.2) |
 | `--t-h2` | `clamp(1.625rem, 1.15rem + 1.4vw, 2.375rem)` / 1,15 | Títulos de seção |
 | `--t-numeral` | 2.5rem / 1 | Numerais "01–04" |
 | `--t-h3` | 1.1875rem / 1,35 | Títulos de card |
@@ -330,7 +331,7 @@ Todos os tokens usam a Director UA 400 (`--font-display`, `--font-sans` e `--fon
 | `--t-eyebrow` | 0.75rem, caixa alta, tracking 0,08em, cor `--primary` | Rótulos de seção |
 | `--t-mono` | 0.8125rem / 1,6 | Logs, hashes, códigos |
 
-**Carregamento:** `@font-face` local com `font-display: swap`, sem requisição externa.
+**Carregamento:** dois `@font-face` locais (Director UA com `swap`, Cinzel com `block`), sem requisição externa. A licença das duas está em `assets/fonts/OFL.txt`.
 
 **Fallback:** `ui-monospace, Menlo, Consolas, "Courier New", monospace`. Os caracteres que a fonte não tem (`º`, `ª`, `▼`, `▲`, `✓`) aparecem na fonte de reserva.
 
