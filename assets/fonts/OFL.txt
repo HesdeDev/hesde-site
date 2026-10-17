@@ -1,5 +1,6 @@
 Fonts in this folder, all licensed under the SIL Open Font License, Version 1.1.
-Both WOFF2 files are format conversions of the original TTF files, with no glyphs removed or altered.
+DirectorUA-Regular.woff2 and Cinzel-Regular.woff2 are format conversions of the original TTF files, with no glyphs removed or altered.
+Roboto-Regular.woff2 is a Modified Version: a Latin subset of the original TTF (the range Google Fonts serves as "latin"), distributed under the same license. Roboto declares no Reserved Font Name.
 
 Director UA (DirectorUA-Regular.woff2), version 1.002
 Designers: Ange Degheest, May Jolivet & Justine Herbel
@@ -9,6 +10,10 @@ The font name table carries no copyright line; the credits above come from its m
 Cinzel (Cinzel-Regular.woff2), version 2.000
 Copyright 2020 The Cinzel Project Authors (https://github.com/NDISCOVER/Cinzel)
 Designer: Natanael Gama
+
+Roboto (Roboto-Regular.woff2), version 3.015
+Copyright 2011 The Roboto Project Authors (https://github.com/googlefonts/roboto-classic)
+Designer: Christian Robertson
 
 This Font Software is licensed under the SIL Open Font License, Version 1.1.
 This license is copied below, and is also available with a FAQ at:

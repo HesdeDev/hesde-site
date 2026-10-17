@@ -163,6 +163,7 @@ O vermelho de "Crítico" precisa ser inconfundível. Por isso o Signature Red fi
 ### 3.2 Tipografia
 
 - **Cinzel 400 só no H1 do hero** (Natanael Gama, SIL OFL 1.1; `assets/fonts/Cinzel-Regular.woff2`). Inscricional, com as minúsculas em versalete. `clamp(2.25rem, 1.15rem + 1.95vw, 3rem)` em duas colunas e `clamp(2rem, 1.2rem + 3.6vw, 3rem)` em uma, entrelinha 1,12, tracking 0,02em; `font-display: block`, para o título não trocar de fonte depois de aparecer.
+- **Roboto 400 no parágrafo e nos dois botões do hero** (Christian Robertson, SIL OFL 1.1; `assets/fonts/Roboto-Regular.woff2`, subconjunto latino de 25 KB). Parágrafo em 1.125rem.
 - **Director UA 400 no resto do site:** wordmark, títulos, texto, interface, logs, hashes e códigos. Monoespaçada, com serifas de máquina de escrever, da Velvetyne Type Foundry, sob a SIL OFL 1.1.
   - Arquivo local `assets/fonts/DirectorUA-Regular.woff2`, com a licença ao lado (`assets/fonts/OFL.txt`).
   - Só tem o peso Regular. A hierarquia vem de tamanho, cor, caixa alta e espaço; `font-synthesis-weight: none` impede negrito falso.
@@ -331,7 +332,7 @@ Todos os tokens usam a Director UA 400 (`--font-display`, `--font-sans` e `--fon
 | `--t-eyebrow` | 0.75rem, caixa alta, tracking 0,08em, cor `--primary` | Rótulos de seção |
 | `--t-mono` | 0.8125rem / 1,6 | Logs, hashes, códigos |
 
-**Carregamento:** dois `@font-face` locais (Director UA com `swap`, Cinzel com `block`), sem requisição externa. A licença das duas está em `assets/fonts/OFL.txt`.
+**Carregamento:** três `@font-face` locais (Director UA e Roboto com `swap`, Cinzel com `block`), sem requisição externa. Créditos e licença em `assets/fonts/OFL.txt`.
 
 **Fallback:** `ui-monospace, Menlo, Consolas, "Courier New", monospace`. Os caracteres que a fonte não tem (`º`, `ª`, `▼`, `▲`, `✓`) aparecem na fonte de reserva.
 

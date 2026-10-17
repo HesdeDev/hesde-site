@@ -4,23 +4,11 @@
    6. Sistema de design   7. Movimento   8. Responsivo
    ===================================================================== */
 
-/* Fonte do site inteiro: Director UA, monoespaçada (Velvetyne, SIL OFL 1.1; licença em assets/fonts/OFL.txt).
-   Só tem o peso 400: a hierarquia vem de tamanho, cor e caixa, sem negrito. */
-@font-face {
-  font-family: "Director UA";
-  src: url("fonts/DirectorUA-Regular.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-/* Título do hero: Cinzel (Natanael Gama, SIL OFL 1.1). block evita a troca de fonte depois que o título aparece. */
-@font-face {
-  font-family: "Cinzel";
-  src: url("fonts/Cinzel-Regular.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: block;
-}
+/* Fontes locais, só no peso 400 (SIL OFL 1.1; créditos em assets/fonts/OFL.txt): Director UA no site,
+   Cinzel no título do hero (block evita a troca depois que ele aparece), Roboto no texto e nos botões do hero. */
+@font-face { font-family: "Director UA"; src: url("fonts/DirectorUA-Regular.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Cinzel"; src: url("fonts/Cinzel-Regular.woff2") format("woff2"); font-weight: 400; font-display: block; }
+@font-face { font-family: "Roboto"; src: url("fonts/Roboto-Regular.woff2") format("woff2"); font-weight: 400; font-display: swap; }
 
 /* ---------- 1. Tokens ---------- */
 :root {
@@ -666,7 +654,8 @@ h1, h2, h3, h4, .h2, .h3, .h4 { overflow-wrap: break-word; }
               repeating-linear-gradient(180deg, currentColor 0 1px, transparent 1px 64px) 100% 0 / 12px 100% no-repeat; }
 .hero__layout { position: relative; display: grid; grid-template-columns: 5fr 7fr; gap: 56px; align-items: center; }
 .hero__copy .display { font-family: "Cinzel", Georgia, "Times New Roman", serif; font-size: clamp(2.25rem, 1.15rem + 1.95vw, 3rem); line-height: 1.12; letter-spacing: .02em; }
-.hero__copy .lead { margin-top: 24px; }
+.hero__copy .lead { margin-top: 24px; font-size: 1.125rem; }
+.hero__copy .lead, .hero__ctas .btn { font-family: "Roboto", ui-sans-serif, system-ui, "Segoe UI", Arial, sans-serif; }
 .hero__ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 36px; }
 .hero__chips { margin-top: 32px; }
 .hero-in { animation: heroIn 600ms var(--ease) both; animation-delay: calc(var(--i, 0) * 60ms + 80ms); }
