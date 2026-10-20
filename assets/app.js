@@ -472,10 +472,30 @@
   function initFlow() {
     const root = $("#flow");
     const tabs = $$(".flow__step", root), prog = $(".flow__progress", root), panel = $("#flow-panel");
-    const swap = $$("[data-flow-swap]", root);
-    let idx = 0, auto = !reduced(), timer = null, swapT = null;
+    const slide = $("[data-flow-slide]", root);
+    let idx = 0, auto = !reduced(), timer = null, swapT = null, dir = 1;
+
+    function setDir(next) {
+      if (next === idx) return;
+      if (idx === tabs.length - 1 && next === 0) dir = 1;
+      else if (idx === 0 && next === tabs.length - 1) dir = -1;
+      else dir = next > idx ? 1 : -1;
+      panel.style.setProperty("--flow-dir", String(dir));
+      slide.style.setProperty("--flow-dir", String(dir));
+    }
+
+    function paint(i) {
+      const t = tabs[i];
+      $("#flow-count").textContent = "Etapa " + (i + 1) + " de " + tabs.length;
+      $("#flow-title").textContent = t.textContent.trim();
+      $("#flow-text").textContent = t.dataset.text;
+      $("#flow-out").textContent = "Saída: " + t.dataset.out;
+    }
+
     function select(i, focus) {
-      i = (i + tabs.length) % tabs.length;
+      i = ((i % tabs.length) + tabs.length) % tabs.length;
+      if (i === idx) return;
+      setDir(i);
       tabs.forEach((t, k) => {
         t.setAttribute("aria-selected", String(k === i));
         t.tabIndex = k === i ? 0 : -1;
@@ -484,24 +504,39 @@
       prog.style.setProperty("--p", i / (tabs.length - 1));
       panel.setAttribute("aria-labelledby", tabs[i].id);
       if (focus) tabs[i].focus();
-      idx = i;
-      const t = tabs[i];
-      const apply = () => {
-        $("#flow-count").textContent = "Etapa " + (i + 1) + " de " + tabs.length;
-        $("#flow-title").textContent = t.textContent.trim();
-        $("#flow-text").textContent = t.dataset.text;
-        $("#flow-out").textContent = "Saída: " + t.dataset.out;
-        swap.forEach((s) => s.classList.remove("is-out"));
-      };
+
       clearTimeout(swapT);
-      if (reduced()) { apply(); return; }
-      swap.forEach((s) => s.classList.add("is-out"));
-      swapT = setTimeout(apply, 160);
+      if (reduced()) {
+        paint(i);
+        idx = i;
+        return;
+      }
+
+      slide.classList.remove("is-enter", "is-exit");
+      void slide.offsetWidth;
+      slide.classList.add("is-exit");
+      const target = i;
+      swapT = setTimeout(() => {
+        paint(target);
+        idx = target;
+        slide.classList.remove("is-exit");
+        void slide.offsetWidth;
+        slide.classList.add("is-enter");
+        const done = () => {
+          slide.classList.remove("is-enter");
+          slide.removeEventListener("animationend", done);
+        };
+        slide.addEventListener("animationend", done);
+        swapT = setTimeout(done, 360);
+      }, 260);
     }
+
     function stopAuto() { auto = false; clearInterval(timer); timer = null; }
     tabs.forEach((t, k) => {
       t.addEventListener("click", () => { stopAuto(); select(k); });
-      t.addEventListener("pointerenter", (e) => { if (e.pointerType === "mouse" && fine() && k !== idx) { stopAuto(); select(k); } });
+      t.addEventListener("pointerenter", (e) => {
+        if (e.pointerType === "mouse" && fine()) { stopAuto(); select(k); }
+      });
     });
     root.addEventListener("keydown", (e) => {
       const k = tabs.indexOf(document.activeElement);
@@ -663,7 +698,7 @@
     function line(l, i) {
       const el = document.createElement("div");
       el.className = "log__line" + (l.sev ? " t-" + l.sev : "");
-      el.innerHTML = '<span class="t-muted">' + stamp(i) + "</span>" + (l.sev ? icon("sev-" + l.sev) + "<b>[" + SEV[l.sev] + "]</b> " : "") + "<span>" + esc(l.text) + "</span>";
+      el.innerHTML = '<span class="t-muted">' + stamp(i) + "</span>" + (l.sev ? icon("sev-" + l.sev) + "<b>[" + SEV[l.sev] + "]</b> " : "") + '<span class="log__msg">' + esc(l.text) + "</span>";
       log.appendChild(el);
       log.scrollTop = log.scrollHeight;
     }

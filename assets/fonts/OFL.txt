@@ -1,13 +1,22 @@
 Fonts in this folder, all licensed under the SIL Open Font License, Version 1.1.
 DirectorUA-Regular.woff2 and Cinzel-Regular.woff2 are format conversions of the original TTF files, with no glyphs removed or altered.
-Roboto-Regular.woff2 is a Modified Version: a Latin subset of the original TTF (the range Google Fonts serves as "latin"), distributed under the same license. Roboto declares no Reserved Font Name.
+Roboto-Regular.woff2 and Lora-Regular.woff2 are Modified Versions: Latin subsets of the original files (the range Google Fonts / Fontsource serve as "latin"), distributed under the same license. Roboto and Lora declare no Reserved Font Name.
+Geist-Thin.woff2 is redistributed unchanged from the Geist project (Vercel / basement.studio).
 
 Director UA (DirectorUA-Regular.woff2), version 1.002
 Designers: Ange Degheest, May Jolivet & Justine Herbel
 Publisher: Velvetyne Type Foundry (http://www.velvetyne.fr/)
 The font name table carries no copyright line; the credits above come from its metadata.
 
-Cinzel (Cinzel-Regular.woff2), version 2.000
+Lora (Lora-Regular.woff2)
+Copyright 2011 The Lora Project Authors (https://github.com/cyrealtype/Lora-Cyrillic)
+Designer: Olga Karpushina / Cyreal
+
+Geist (Geist-Thin.woff2, Geist-Regular.woff2, Geist-Medium.woff2, Geist-SemiBold.woff2)
+Copyright (c) 2023 Vercel, in collaboration with basement.studio
+https://github.com/vercel/geist-font
+
+Cinzel (Cinzel-Regular.woff2), version 2.000 — kept in folder; no longer used by the site
 Copyright 2020 The Cinzel Project Authors (https://github.com/NDISCOVER/Cinzel)
 Designer: Natanael Gama
 

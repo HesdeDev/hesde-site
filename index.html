@@ -150,14 +150,15 @@
     </div>
     <div class="container hero__layout">
       <div class="hero__copy">
-        <p class="eyebrow hero-in" style="--i:0">Gestão contínua de exposições</p>
-        <h1 class="display hero-in" style="--i:1" id="hero-title">Gestão contínua de exposições e riscos de segurança para empresas.</h1>
-        <p class="lead hero-in" style="--i:2">O Hesde identifica, prioriza e ajuda a validar riscos em infraestrutura, aplicações, nuvem e identidade. Cada decisão vem com evidência, e cada atividade respeita o escopo autorizado.</p>
-        <div class="hero__ctas hero-in" style="--i:3">
+        <p class="eyebrow hero-in" style="--i:0">Auditoria · CTEM · Validação</p>
+        <h1 class="display hero-in" style="--i:1" id="hero-title">Exposições sob controle contínuo.</h1>
+        <p class="subtitle hero-in" style="--i:2">Evidência verificável em cada decisão.</p>
+        <p class="lead hero-in" style="--i:3">O Hesde identifica o que importa, prioriza pelo risco real e valida com autorização. Infraestrutura, aplicações, nuvem e identidade — cada atividade respeita o escopo aprovado.</p>
+        <div class="hero__ctas hero-in" style="--i:4">
           <a class="btn btn--primary btn--lg" href="#contato" data-demo>Solicitar demonstração</a>
           <a class="btn btn--secondary btn--lg" href="#plataforma">Conhecer a plataforma <svg class="ic ic--16" aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
         </div>
-        <ul class="chips hero__chips hero-in" style="--i:4" role="list" aria-label="O que o Hesde cobre">
+        <ul class="chips hero__chips hero-in" style="--i:5" role="list" aria-label="O que o Hesde cobre">
           <li class="chip">Auditoria</li>
           <li class="chip"><button type="button" class="term" data-term="CTEM">CTEM</button></li>
           <li class="chip"><button type="button" class="term" data-term="Hardening">Hardening</button></li>
@@ -230,7 +231,8 @@
     <div class="container">
       <div class="section-head" data-reveal>
         <p class="eyebrow">O problema</p>
-        <h2 class="h2" id="problema-title">Vulnerabilidades não são o problema. Falta de contexto é.</h2>
+        <h2 class="h2" id="problema-title">Vulnerabilidades não são o problema.</h2>
+        <p class="subtitle">Falta de contexto é.</p>
         <p class="lead">Times de segurança recebem milhares de alertas, CVEs e relatórios por mês, quase sempre sem uma ordem clara do que corrigir primeiro. O resultado é esforço alto, risco que continua e pouca evidência para mostrar à gestão e à auditoria.</p>
       </div>
       <div class="grid-3">
@@ -259,6 +261,7 @@
       <div class="section-head" data-reveal>
         <p class="eyebrow">A solução</p>
         <h2 class="h2" id="solucao-title">Do inventário à decisão de segurança.</h2>
+        <p class="subtitle">Um ciclo contínuo, com evidência em cada etapa.</p>
         <p class="lead">O Hesde segue o ciclo de <button type="button" class="term" data-term="CTEM">CTEM</button>: cada etapa alimenta a próxima, e cada achado técnico vira uma decisão prática, com responsável, prazo e evidência.</p>
       </div>
       <div class="flow" id="flow" data-reveal>
@@ -274,12 +277,16 @@
           <button class="flow__step" type="button" role="tab" id="flow-tab-8" aria-controls="flow-panel" aria-selected="false" tabindex="-1" data-out="Tendência" data-text="Uma nova verificação confirma a correção. Um achado só fecha com evidência de que passou, nunca pela ausência de dado."><span class="flow__dot"></span><span>Revalidar</span></button>
         </div>
         <div class="card flow__card" id="flow-panel" role="tabpanel" aria-labelledby="flow-tab-1" tabindex="0">
-          <div class="fade-swap" data-flow-swap>
-            <p class="flow__count" id="flow-count">Etapa 1 de 8</p>
-            <p class="flow__title" id="flow-title">Descobrir</p>
+          <div class="flow__viewport">
+            <div class="flow__slide" data-flow-slide>
+              <div class="flow__slide-head">
+                <p class="flow__count" id="flow-count">Etapa 1 de 8</p>
+                <p class="flow__title" id="flow-title">Descobrir</p>
+              </div>
+              <p class="flow__text" id="flow-text">Encontra hosts, serviços, nomes e contas dentro do escopo aprovado. Cada conexão é conferida antes de sair, e nada fora do escopo é tocado.</p>
+              <span class="chip chip--brand" id="flow-out">Saída: Observações</span>
+            </div>
           </div>
-          <p class="flow__text fade-swap" data-flow-swap id="flow-text">Encontra hosts, serviços, nomes e contas dentro do escopo aprovado. Cada conexão é conferida antes de sair, e nada fora do escopo é tocado.</p>
-          <span class="chip chip--brand fade-swap" data-flow-swap id="flow-out">Saída: Observações</span>
         </div>
       </div>
     </div>
@@ -290,7 +297,8 @@
     <div class="container">
       <div class="section-head" data-reveal>
         <p class="eyebrow">Produto</p>
-        <h2 class="h2" id="produto-title">Dois módulos. Um ciclo contínuo de redução de risco.</h2>
+        <h2 class="h2" id="produto-title">Dois módulos.</h2>
+        <p class="subtitle">Um ciclo contínuo de redução de risco.</p>
         <p class="lead">O Audit mostra onde você está exposto. O Validate confirma, com segurança e autorização, se a exposição é real e se os seus controles a detectam.</p>
       </div>
       <div class="grid-2">
@@ -336,7 +344,8 @@
       <div class="section-head" data-reveal>
         <p class="eyebrow">Plataforma</p>
         <h2 class="h2" id="plataforma-title">Experimente a interface.</h2>
-        <p class="lead">Uma simulação da plataforma com dados fictícios. Filtre ativos, confira o escopo, rode uma auditoria, acompanhe uma validação com aprovação humana e verifique a trilha de auditoria.</p>
+        <p class="subtitle">Uma simulação navegável, com dados fictícios.</p>
+        <p class="lead">Filtre ativos, confira o escopo, rode uma auditoria, acompanhe uma validação com aprovação humana e verifique a trilha de auditoria.</p>
       </div>
 
       <div class="app" id="app" data-reveal>
@@ -652,7 +661,8 @@
       <div class="section-head section-head--center" data-reveal>
         <p class="eyebrow">Antes e depois</p>
         <h2 class="h2" id="cmp-title">Do ruído ao plano de ação.</h2>
-        <p class="lead">Arraste o controle para comparar o dia a dia sem e com o Hesde.</p>
+        <p class="subtitle">O mesmo cenário, com e sem o Hesde.</p>
+        <p class="lead">Arraste o controle para comparar o dia a dia.</p>
       </div>
       <div class="compare" id="compare" data-reveal>
         <div class="compare__controls">
@@ -734,7 +744,9 @@
     <div class="container">
       <div class="section-head" data-reveal>
         <p class="eyebrow">Recursos</p>
-        <h2 class="h2" id="recursos-title">O essencial para reduzir exposição com método.</h2>
+        <h2 class="h2" id="recursos-title">O essencial para reduzir exposição.</h2>
+        <p class="subtitle">Método, escopo e evidência em cada capacidade.</p>
+        <p class="lead">Do inventário à validação: o que a plataforma entrega para decidir com contexto.</p>
       </div>
       <div class="grid-3">
         <article class="card card--hover feature" data-reveal>
@@ -788,7 +800,9 @@
     <div class="container">
       <div class="section-head" data-reveal>
         <p class="eyebrow">Como funciona</p>
-        <h2 class="h2" id="como-title">Quatro passos do primeiro acesso ao acompanhamento contínuo.</h2>
+        <h2 class="h2" id="como-title">Quatro passos.</h2>
+        <p class="subtitle">Do primeiro acesso ao acompanhamento contínuo.</p>
+        <p class="lead">Conecte o ambiente, audite, priorize e acompanhe correções com evidência.</p>
       </div>
       <div class="how-wrap" id="how">
       <div class="how__line" aria-hidden="true"><span class="how__fill"></span></div>
@@ -824,7 +838,8 @@
       <div class="sec__left">
         <p class="eyebrow">Segurança e confiança</p>
         <h2 class="h2" id="seg-title">Construído com segurança desde o núcleo.</h2>
-        <p class="lead" style="margin-top:20px">Uma ferramenta que olha para as fraquezas de uma empresa precisa ser mais rigorosa que o ambiente que audita. Os controles abaixo valem em todos os planos e não são vendidos à parte.</p>
+        <p class="subtitle">Controles em todos os planos, sem upsell.</p>
+        <p class="lead">Uma ferramenta que olha para as fraquezas de uma empresa precisa ser mais rigorosa que o ambiente que audita.</p>
         <blockquote class="sec__quote">Nenhuma exploração destrutiva, nunca. Não existe nível de atividade destrutivo no Hesde.</blockquote>
       </div>
       <div class="sec-tl-wrap" id="sec-tl">
@@ -848,7 +863,9 @@
     <div class="container">
       <div class="section-head" data-reveal>
         <p class="eyebrow">Para quem</p>
-        <h2 class="h2" id="pq-title">Uma base comum para quem cuida do risco.</h2>
+        <h2 class="h2" id="pq-title">Uma base comum.</h2>
+        <p class="subtitle">Para quem cuida do risco.</p>
+        <p class="lead">SOC, auditoria, infraestrutura, Technology Risk, AppSec e gestão — o mesmo contexto, em linguagens diferentes.</p>
       </div>
       <div class="grid-3">
         <article class="card card--hover" data-reveal><span class="tile" aria-hidden="true"><svg class="ic"><use href="#i-activity"/></svg></span><h3 class="h3">Times de segurança e SOC</h3><p>Menos triagem manual e detecções comprovadas com eventos controlados.</p></article>
@@ -866,7 +883,9 @@
     <div class="container">
       <div class="section-head" data-reveal>
         <p class="eyebrow">Confiança</p>
-        <h2 class="h2" id="conf-title">Resultados que a sua equipe consegue demonstrar.</h2>
+        <h2 class="h2" id="conf-title">Resultados que a equipe demonstra.</h2>
+        <p class="subtitle">Menos ruído. Mais evidência.</p>
+        <p class="lead">O que muda no dia a dia quando a exposição tem contexto, prazo e prova.</p>
       </div>
       <ul class="proof__metrics" role="list" data-reveal>
         <li class="proof__metric"><svg class="ic" aria-hidden="true"><use href="#i-filter"/></svg>Menos ruído operacional.</li>
@@ -924,8 +943,9 @@
     <div class="container">
       <div class="section-head section-head--center" data-reveal>
         <p class="eyebrow">Preços</p>
-        <h2 class="h2" id="precos-title">Planos para cada estágio de maturidade.</h2>
-        <p class="lead">Os controles de segurança estão em todos os planos. O que muda é a profundidade da análise, a escala e o suporte.</p>
+        <h2 class="h2" id="precos-title">Planos para cada estágio.</h2>
+        <p class="subtitle">Controles de segurança em todos os planos.</p>
+        <p class="lead">O que muda é a profundidade da análise, a escala e o suporte.</p>
       </div>
       <div class="billing" data-reveal>
         <div class="seg" role="radiogroup" aria-label="Período de cobrança" id="billing" data-seg>
@@ -1019,7 +1039,9 @@
     <div class="container faq">
       <div class="faq__aside" data-reveal>
         <p class="eyebrow">Perguntas frequentes</p>
-        <h2 class="h2" id="faq-title">O que as equipes perguntam antes de começar.</h2>
+        <h2 class="h2" id="faq-title">Antes de começar.</h2>
+        <p class="subtitle">O que as equipes perguntam.</p>
+        <p class="lead">Escopo, autorização, ambientes e o que o Hesde faz — e o que não faz.</p>
       </div>
       <div class="acc" id="faq-acc" data-reveal>
         <div class="acc__item">
@@ -1056,7 +1078,8 @@
       <div data-reveal>
         <p class="eyebrow">Contato</p>
         <h2 class="h2" id="contato-title">Solicite uma demonstração.</h2>
-        <p class="lead" style="margin-top:20px">Mostramos o Hesde em um laboratório com dados fictícios e conversamos sobre o seu escopo, seus controles e suas prioridades.</p>
+        <p class="subtitle">Laboratório com dados fictícios.</p>
+        <p class="lead">Conversamos sobre o seu escopo, seus controles e suas prioridades — sem acesso ao seu ambiente.</p>
         <ul class="checklist checklist--brand">
           <li><svg class="ic" aria-hidden="true"><use href="#i-mail"/></svg>Retornamos pelo e-mail informado</li>
           <li><svg class="ic" aria-hidden="true"><use href="#i-monitor"/></svg>Demonstração guiada, sem acesso ao seu ambiente</li>
@@ -1254,18 +1277,17 @@
 
         <article class="card ds__block ds__block--wide">
           <h3 class="h4"><span class="num">04</span>Tipografia</h3>
-          <div class="type-row"><code>H1 do hero · Cinzel</code><span class="display" style="font-family:Cinzel,Georgia,serif;font-size:clamp(2rem,1.4rem + 2vw,3rem);letter-spacing:.02em">Gestão contínua</span></div>
-          <div class="type-row"><code>Texto do hero · Roboto</code><span class="lead" style="font-family:Roboto,Arial,sans-serif;font-size:1.125rem">O Hesde identifica, prioriza e ajuda a validar riscos.</span></div>
-          <div class="type-row"><code>--t-display · Director UA</code><span class="display" style="font-size:clamp(2rem,1.4rem + 2vw,3rem)">Exposição com contexto</span></div>
-          <div class="type-row"><code>--t-h2 · Director UA</code><span class="h2">Títulos de seção</span></div>
-          <div class="type-row"><code>--t-numeral</code><span class="numeral">01 02 03</span></div>
-          <div class="type-row"><code>--t-h3 · Director UA</code><span class="h3">Título de card</span></div>
-          <div class="type-row"><code>--t-h4 · Director UA</code><span class="h4">Subtítulo de painel</span></div>
-          <div class="type-row"><code>--t-lead · Director UA</code><span class="lead">Subtítulo de seção, até 60 caracteres por linha.</span></div>
-          <div class="type-row"><code>--t-body · Director UA</code><span>Texto corrido com altura de linha de 1,65.</span></div>
-          <div class="type-row"><code>--t-ui · Director UA</code><span style="font:500 var(--t-ui)/1.4 var(--font-sans)">Botões, abas e tabelas</span></div>
-          <div class="type-row"><code>--t-small · Director UA</code><span class="small">Notas e legendas</span></div>
-          <div class="type-row"><code>--t-eyebrow · Director UA</code><span class="eyebrow" style="margin:0">Rótulo de seção</span></div>
+          <div class="type-row"><code>Eyebrow · Geist Thin</code><span class="eyebrow" style="margin:0">Auditoria · CTEM · Validação</span></div>
+          <div class="type-row"><code>Título · Lora</code><span class="display" style="font-size:clamp(2rem,1.4rem + 2vw,3rem)">Exposições sob controle</span></div>
+          <div class="type-row"><code>Subtítulo · Geist Medium</code><span class="subtitle" style="margin:0">Evidência verificável em cada decisão.</span></div>
+          <div class="type-row"><code>Descrição · Geist</code><span class="lead" style="margin:0">O Hesde identifica o que importa e prioriza pelo risco real.</span></div>
+          <div class="type-row"><code>--t-h2 · Lora</code><span class="h2">Títulos de seção</span></div>
+          <div class="type-row"><code>--t-numeral · Geist</code><span class="numeral">01 02 03 · 87%</span></div>
+          <div class="type-row"><code>--t-h3 · Geist</code><span class="h3">Título de card</span></div>
+          <div class="type-row"><code>--t-h4 · Geist</code><span class="h4">Subtítulo de painel</span></div>
+          <div class="type-row"><code>--t-body · Geist</code><span>Texto corrido com altura de linha de 1,65.</span></div>
+          <div class="type-row"><code>--t-ui · Geist</code><span style="font:500 var(--t-ui)/1.4 var(--font-sans)">Botões, abas e tabelas</span></div>
+          <div class="type-row"><code>--t-small · Geist</code><span class="small">Notas e legendas</span></div>
           <div class="type-row"><code>--t-mono · Director UA</code><span class="mono">policy.decision · target.in_scope · sha256:9c1e…4b07</span></div>
         </article>
 
